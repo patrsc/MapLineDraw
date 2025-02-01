@@ -7,6 +7,12 @@ https://maplinedraw.com
 
 ## Run API
 
+Install dependencies:
+```
+cd api
+poetry install
+```
+
 Run API:
 ```
 poetry run fastapi dev api.py
