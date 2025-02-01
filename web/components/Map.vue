@@ -36,7 +36,11 @@ import 'leaflet/dist/leaflet.css'
 import { getColor, colorMaps } from "~/utils/themes"
 
 let map
-let selectedCurveIndex = -1
+const selectedCurveIndex = ref(-1)
+const selectedCurve = computed(() => {
+    return (selectedCurveIndex.value == -1) ? null : project.value.curves[selectedCurveIndex.value]
+})
+const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
 let updating = false
 let drawMode = false
 
@@ -125,7 +129,7 @@ function updateDrawMode() {
         setLeafletCursor("crosshair")
     } else {
         setLeafletCursor("grab")
-        if (selectedCurveIndex == -1) {
+        if (!isCurveSelected.value) {
             btnDrawText.value = "Draw new curve"
         } else {
             btnDrawText.value = "Add points"
@@ -144,8 +148,8 @@ function addControlPoint(e) {
         unselect()
         return
     }
-    if (selectedCurveIndex == -1) {
-        selectedCurveIndex = project.value.curves.length
+    if (!isCurveSelected.value) {
+        selectedCurveIndex.value = project.value.curves.length
         project.value.curves.push(newCurve("Curve"))
     }
     insertPoint(e.latlng, -1)
@@ -174,8 +178,7 @@ function newPoint(lat, lng) {
 function insertPoint(latlng, insertIndex) {
     const { lat, lng } = latlng
     const point = newPoint(lat, lng)
-    let currentPolyline
-    currentPolyline = project.value.curves[selectedCurveIndex]
+    let currentPolyline = selectedCurve.value
     if (insertIndex == -1) {
         currentPolyline.points.push(point)
     } else {
@@ -202,7 +205,7 @@ function updateCurveList() {
             e.stopPropagation()
             selectPolyline(index)
         })
-        if (index == selectedCurveIndex) {
+        if (index == selectedCurveIndex.value) {
             li.className += ' selected-item'
             const right = document.createElement("div")
             const btnClose = document.createElement('button')
@@ -236,12 +239,12 @@ function updateCurveList() {
 function updateProperties() {
     const e = document.getElementById("curve-props")
     e.innerHTML = ""
-    if (selectedCurveIndex != -1) {
+    if (isCurveSelected.value) {
         const h = document.createElement("h2")
         h.innerText = "Properties"
         h.style = "width: 100%"
         e.appendChild(h)
-        const p = project.value.curves[selectedCurveIndex]
+        const p = project.value.curves[selectedCurveIndex.value]
         const nPoints = p.points.length
         const data = p.spline.data
         let texts = [`Points: ${nPoints}`]
@@ -273,19 +276,19 @@ function deletePolyline(index) {
 }
 
 function deleteSelectedPolyline() {
-    if (selectedCurveIndex >= 0) {
-        deletePolyline(selectedCurveIndex)
+    if (isCurveSelected.value) {
+        deletePolyline(selectedCurveIndex.value)
     }
 }
 
 function unselect() {
-    selectedCurveIndex = -1
+    selectedCurveIndex.value = -1
     drawMode = false
     update()
 }
 
 function selectPolyline(index) {
-    selectedCurveIndex = index
+    selectedCurveIndex.value = index
     update()
 }
 
@@ -318,7 +321,7 @@ function drawItems() {
     project.value.curves.forEach((p, polyIndex) => {
         // drawSpline(p, polyIndex)
         drawSplineColorMap(p, polyIndex, colorMap)
-        if (polyIndex == selectedCurveIndex) {
+        if (polyIndex == selectedCurveIndex.value) {
             drawControlLine(p, polyIndex)
             drawPoints(p)
         }
@@ -549,8 +552,8 @@ function latLngToXY(p) {
 
 function requestCurveUpdate() {
     // request update of selected curve by incrementing requestedId
-    if (selectedCurveIndex != -1) {
-        project.value.curves[selectedCurveIndex].spline.requestedId++
+    if (isCurveSelected.value) {
+        project.value.curves[selectedCurveIndex.value].spline.requestedId++
     }
 }
 
