@@ -178,7 +178,7 @@ function newPoint(lat, lng) {
 function insertPoint(latlng, insertIndex) {
     const { lat, lng } = latlng
     const point = newPoint(lat, lng)
-    let currentPolyline = selectedCurve.value
+    const currentPolyline = selectedCurve.value
     if (insertIndex == -1) {
         currentPolyline.points.push(point)
     } else {
