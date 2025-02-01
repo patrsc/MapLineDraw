@@ -14,6 +14,7 @@ app = FastAPI(title="Curve API")
 
 origins = [
     "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
