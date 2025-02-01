@@ -44,7 +44,7 @@ const mapElement = useTemplateRef('map-element')
 
 const btnDrawText = ref("")
 
-let project = {
+const project = ref({
     info: {
         name: "Project",
         description: "",
@@ -63,7 +63,7 @@ let project = {
             background: "osm",
         },
     }
-}
+})
 
 function createMap() {
     let options = {
@@ -89,16 +89,16 @@ function initializeMap() {
 }
 
 function getMapView() {
-    const m = project.settings.map
+    const m = project.value.settings.map
     return [[m.center.lat, m.center.lon], m.zoom]
 }
 
 function updateMapView() {
     const z = map.getZoom()
     const c = map.getCenter()
-    project.settings.map.center.lat = c.lat
-    project.settings.map.center.lon = c.lng
-    project.settings.map.zoom = z
+    project.value.settings.map.center.lat = c.lat
+    project.value.settings.map.center.lon = c.lng
+    project.value.settings.map.zoom = z
     saveLocalStorage()
 }
 
@@ -145,8 +145,8 @@ function addControlPoint(e) {
         return
     }
     if (selectedCurveIndex == -1) {
-        selectedCurveIndex = project.curves.length
-        project.curves.push(newCurve("Curve"))
+        selectedCurveIndex = project.value.curves.length
+        project.value.curves.push(newCurve("Curve"))
     }
     insertPoint(e.latlng, -1)
     requestCurveUpdate()
@@ -175,7 +175,7 @@ function insertPoint(latlng, insertIndex) {
     const { lat, lng } = latlng
     const point = newPoint(lat, lng)
     let currentPolyline
-    currentPolyline = project.curves[selectedCurveIndex]
+    currentPolyline = project.value.curves[selectedCurveIndex]
     if (insertIndex == -1) {
         currentPolyline.points.push(point)
     } else {
@@ -192,7 +192,7 @@ function updateSidebar() {
 function updateCurveList() {
     const list = document.getElementById('polyline-list')
     list.innerHTML = ''
-    project.curves.forEach((p, index) => {
+    project.value.curves.forEach((p, index) => {
         const li = document.createElement('div')
         li.className = 'list-item'
         const t = document.createElement('div')
@@ -225,7 +225,7 @@ function updateCurveList() {
         }
         list.appendChild(li)
     })
-    if (project.curves.length == 0) {
+    if (project.value.curves.length == 0) {
         const text = document.createElement("div")
         text.textContent = 'No curves yet.'
         text.className = "no-lines-placeholder"
@@ -241,7 +241,7 @@ function updateProperties() {
         h.innerText = "Properties"
         h.style = "width: 100%"
         e.appendChild(h)
-        const p = project.curves[selectedCurveIndex]
+        const p = project.value.curves[selectedCurveIndex]
         const nPoints = p.points.length
         const data = p.spline.data
         let texts = [`Points: ${nPoints}`]
@@ -268,7 +268,7 @@ function updateProperties() {
 }
 
 function deletePolyline(index) {
-    project.curves = project.curves.filter((p, i) => i !== index);
+    project.value.curves = project.value.curves.filter((p, i) => i !== index);
     unselect()
 }
 
@@ -310,12 +310,12 @@ function deleteItems() {
 }
 
 function getSelectedColorMap() {
-    return project.colorMaps[project.settings.selectedColorMapIndex]
+    return project.value.colorMaps[project.value.settings.selectedColorMapIndex]
 }
 
 function drawItems() {
     const colorMap = getSelectedColorMap()
-    project.curves.forEach((p, polyIndex) => {
+    project.value.curves.forEach((p, polyIndex) => {
         // drawSpline(p, polyIndex)
         drawSplineColorMap(p, polyIndex, colorMap)
         if (polyIndex == selectedCurveIndex) {
@@ -422,7 +422,7 @@ function lineClick(e, index) {
 }
 
 function addIntermediatePoint(polyIndex, latlng) {
-    const poly = project.curves[polyIndex]
+    const poly = project.value.curves[polyIndex]
     // Find point in polyline after which point should be inserted
     let insertIndex = 0
     let minDistance = Infinity
@@ -470,9 +470,9 @@ function moveableMarker(map, marker) {
 }
 
 function deletePoint(point) {
-    for (const [ polyIndex, poly ] of project.curves.entries()) {
+    for (const [ polyIndex, poly ] of toRaw(project.value).curves.entries()) {
         for (const [ index, currentPoint ] of poly.points.entries()) {
-            if (currentPoint === point) {
+            if (currentPoint == point) {
                 poly.points.splice(index, 1)
                 if (poly.points.length == 0) {
                     deletePolyline(polyIndex)
@@ -550,7 +550,7 @@ function latLngToXY(p) {
 function requestCurveUpdate() {
     // request update of selected curve by incrementing requestedId
     if (selectedCurveIndex != -1) {
-        project.curves[selectedCurveIndex].spline.requestedId++
+        project.value.curves[selectedCurveIndex].spline.requestedId++
     }
 }
 
@@ -562,7 +562,7 @@ async function updateCurves() {
     // check if any curve needs update
     updating = true
     let anyUpdated = false
-    for (const p of project.curves) {
+    for (const p of project.value.curves) {
         if (p.spline.id < p.spline.requestedId) {
             // needs update
             await updateSpline(p)
@@ -641,25 +641,25 @@ function initColorMapSelect() {
 }
 
 function setColormap(e) {
-    project.settings.selectedColorMapIndex = parseInt(e.target.value)
+    project.value.settings.selectedColorMapIndex = parseInt(e.target.value)
     update()
     updateLegend()
 }
 
 function updateColormapSelect() {
     let e = document.getElementById("colormap-select")
-    for (const [index, colorMap] of project.colorMaps.entries()) {
+    for (const [index, colorMap] of project.value.colorMaps.entries()) {
         let option = document.createElement("option")
         option.textContent = colorMap.name
         option.value = index
         e.appendChild(option)
     }
-    e.value = project.settings.selectedColorMapIndex
+    e.value = project.value.settings.selectedColorMapIndex
 }
 
 function saveLocalStorage() {
     // save project to local storage
-    const p = projectToJson(project)
+    const p = projectToJson(project.value)
     localStorage.setItem("project", JSON.stringify(p))
 }
 
@@ -668,7 +668,7 @@ function loadLocalStorage() {
     const s = localStorage.getItem("project")
     if (s != null) {
         const p = JSON.parse(s)
-        project = projectFromJson(p)
+        project.value = projectFromJson(p)
     }
 }
 
