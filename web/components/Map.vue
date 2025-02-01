@@ -25,7 +25,12 @@
                         {{ c.name }}
                     </option>
                 </select>
-                <div id="legend"></div>
+                <div class="legend">
+                    <div v-for="item in selectedColorMap.items" class="legend-item">
+                        <div class="legend-color" :style="`background-color: ${item.color}`"></div>
+                        <div>{{ item.label }}</div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="map" ref="map-element"></div>
@@ -45,6 +50,8 @@ const selectedCurve = computed(() => {
     return (selectedCurveIndex.value == -1) ? null : project.value.curves[selectedCurveIndex.value]
 })
 const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
+const selectedColorMap = computed(() => getSelectedColorMap())
+
 let updating = false
 let drawMode = false
 
@@ -620,32 +627,9 @@ async function loadSpline(p) {
     }
 }
 
-function updateLegend() {
-    const e = document.getElementById('legend')
-    e.innerHTML = ""
-    const colorMap = getSelectedColorMap()
-    for (const { color, label } of colorMap.items) {
-        e.appendChild(legendItem(color, label))
-    }
-}
-
-function legendItem(color, text) {
-    let e = document.createElement('div')
-    e.className = 'legend-item'
-    let c = document.createElement('div')
-    c.className = 'legend-color'
-    c.style = `background-color: ${color}`
-    let t = document.createElement('div')
-    t.textContent = text
-    e.appendChild(c)
-    e.appendChild(t)
-    return e
-}
-
 function setColormap(e) {
     project.value.settings.selectedColorMapIndex = parseInt(e.target.value)
     update()
-    updateLegend()
 }
 
 function saveLocalStorage() {
@@ -705,7 +689,6 @@ onMounted(() => {
     loadLocalStorage()
     initializeMap()
     updateSidebar()
-    updateLegend()
     updateDrawMode()
     setInterval(updateCurves, 50)
 })
@@ -835,7 +818,7 @@ code {
     width: 50%;
 }
 
-#legend {
+.legend {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 1rem;
