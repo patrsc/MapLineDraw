@@ -18,7 +18,7 @@
             </div>
             <div id="polyline-list" class="polyline-list"></div>
             <div class="sidebar-text">
-                <div id="curve-props"></div>
+                <div id="curve-props" class="curve-props"></div>
                 <h2 class="mt-3">Legend</h2>
                 <select id="colormap-select"></select>
                 <div id="legend"></div>
@@ -837,12 +837,12 @@ code {
     color: white;
 }
 
-#curve-props {
+.curve-props {
     display: flex;
     flex-wrap: wrap;
 }
 
-#curve-props div {
+.curve-props div {
     width: 50%;
 }
 
