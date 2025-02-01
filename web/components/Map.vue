@@ -16,7 +16,7 @@
                 <button class="btn-draw" @click="toggleDrawMode">{{ btnDrawText }}</button>
                 <h2 class="mt-3">Curves</h2>
             </div>
-            <div id="polyline-list"></div>
+            <div id="polyline-list" class="polyline-list"></div>
             <div class="sidebar-text">
                 <div id="curve-props"></div>
                 <h2 class="mt-3">Legend</h2>
@@ -797,7 +797,7 @@ p {
 .sidebar-text {
     padding: 0.5rem 0.5rem;
 }
-#polyline-list {
+.polyline-list {
     flex-grow: 1;
 }
 .list-item {
