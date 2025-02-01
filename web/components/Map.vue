@@ -18,7 +18,10 @@
             </div>
             <div id="polyline-list" class="polyline-list"></div>
             <div class="sidebar-text">
-                <div id="curve-props" class="curve-props"></div>
+                <div class="curve-props" v-if="isCurveSelected">
+                    <h2 style="width: 100%">Properties</h2>
+                    <div v-for="text in properties">{{ text }}</div>
+                </div>
                 <h2 class="mt-3">Legend</h2>
                 <select @change="setColormap" :value="project.settings.selectedColorMapIndex">
                     <option v-for="(c, index) in project.colorMaps" :value="index">
@@ -78,6 +81,28 @@ const project = ref({
             background: "osm",
         },
     }
+})
+
+const properties = computed(() => {
+    const p = selectedCurve.value
+    const nPoints = p.points.length
+    const data = p.spline.data
+    let texts = [`Points: ${nPoints}`]
+    if (data) {
+        const distance = data.distance[data.distance.length - 1]
+        const maxCurvature = Math.max(...data.curvature.map(Math.abs))
+        let minRadius = 1/maxCurvature
+        if (minRadius >= 1e6) {
+            minRadius = "∞"
+        } else {
+            minRadius = minRadius.toFixed(0)
+        }
+        const minSpeed = Math.min(...data.speed)
+        texts.push(`Length: ${(distance/1000).toFixed(1)} km`)
+        texts.push(`Radius: ${minRadius} m`)
+        texts.push(`Speed: ${(minSpeed).toFixed(0)} km/h`)
+    }
+    return texts
 })
 
 function createMap() {
@@ -200,7 +225,6 @@ function insertPoint(latlng, insertIndex) {
 
 function updateSidebar() {
     updateCurveList()
-    updateProperties()
 }
 
 function updateCurveList() {
@@ -244,40 +268,6 @@ function updateCurveList() {
         text.textContent = 'No curves yet.'
         text.className = "no-lines-placeholder"
         list.appendChild(text)
-    }
-}
-
-function updateProperties() {
-    const e = document.getElementById("curve-props")
-    e.innerHTML = ""
-    if (isCurveSelected.value) {
-        const h = document.createElement("h2")
-        h.innerText = "Properties"
-        h.style = "width: 100%"
-        e.appendChild(h)
-        const p = project.value.curves[selectedCurveIndex.value]
-        const nPoints = p.points.length
-        const data = p.spline.data
-        let texts = [`Points: ${nPoints}`]
-        if (data) {
-            const distance = data.distance[data.distance.length - 1]
-            const maxCurvature = Math.max(...data.curvature.map(Math.abs))
-            let minRadius = 1/maxCurvature
-            if (minRadius >= 1e6) {
-                minRadius = "∞"
-            } else {
-                minRadius = minRadius.toFixed(0)
-            }
-            const minSpeed = Math.min(...data.speed)
-            texts.push(`Length: ${(distance/1000).toFixed(1)} km`)
-            texts.push(`Radius: ${minRadius} m`)
-            texts.push(`Speed: ${(minSpeed).toFixed(0)} km/h`)
-        }
-        for (const text of texts) {
-            const t = document.createElement("div")
-            t.innerText = text
-            e.appendChild(t)
-        }
     }
 }
 
