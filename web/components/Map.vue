@@ -28,7 +28,7 @@
     </div>
 </template>
 
-<script>
+<script setup>
 
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
@@ -717,16 +717,17 @@ function projectFromJson(p) {
 }
 
 // Main
-createMap()
-loadLocalStorage()
-initializeMap()
-updateSidebar()
-updateLegend()
-initColorMapSelect()
-updateColormapSelect()
-updateDrawMode()
-setInterval(updateCurves, 50)
-
+onMounted(() => {
+    createMap()
+    loadLocalStorage()
+    initializeMap()
+    updateSidebar()
+    updateLegend()
+    initColorMapSelect()
+    updateColormapSelect()
+    updateDrawMode()
+    setInterval(updateCurves, 50)
+})
 
 </script>
 
