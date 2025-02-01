@@ -1,6 +1,6 @@
 <template>
-    <div id="map-app">
-        <div id="sidebar">
+    <div class="map-app">
+        <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
                 <h2>MapLineDraw</h2>
                 <h4>Draw</h4>
@@ -84,8 +84,6 @@ function initializeMap() {
 
     document.addEventListener('keyup', handleKeyboardEvent)
     document.getElementById("btn-draw").addEventListener("click", toggleDrawMode)
-
-    document.getElementById("sidebar").addEventListener('click', unselect)
 }
 
 function getMapView() {
@@ -752,13 +750,13 @@ p {
     margin-bottom: 0.5rem;
 }
 
-#map-app {
+.map-app {
     display: flex;
     height: 100vh;
     margin: 0;
 }
 
-#sidebar {
+.sidebar {
     width: 300px;
     background-color: #f4f4f4;
     padding: 0px 10px;
