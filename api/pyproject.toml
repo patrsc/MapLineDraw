@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "maplinedraw"
+version = "0.1.0"
+description = "MapLineDraw API"
+authors = ["Patrick <patrsc@nubu.at>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^2.1.1"
+scipy = "^1.14.1"
+matplotlib = "^3.9.2"
+fastapi = {extras = ["standard"], version = "^0.115.7"}
+pydantic = "^2.10.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.flake8]
+max-line-length = 100
