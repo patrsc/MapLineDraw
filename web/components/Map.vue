@@ -472,7 +472,7 @@ function moveableMarker(map, marker) {
 function deletePoint(point) {
     for (const [ polyIndex, poly ] of toRaw(project.value).curves.entries()) {
         for (const [ index, currentPoint ] of poly.points.entries()) {
-            if (currentPoint == point) {
+            if (currentPoint === point) {
                 poly.points.splice(index, 1)
                 if (poly.points.length == 0) {
                     deletePolyline(polyIndex)
