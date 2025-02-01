@@ -20,7 +20,11 @@
             <div class="sidebar-text">
                 <div id="curve-props" class="curve-props"></div>
                 <h2 class="mt-3">Legend</h2>
-                <select id="colormap-select"></select>
+                <select @change="setColormap" :value="project.settings.selectedColorMapIndex">
+                    <option v-for="(c, index) in project.colorMaps" :value="index">
+                        {{ c.name }}
+                    </option>
+                </select>
                 <div id="legend"></div>
             </div>
         </div>
@@ -638,26 +642,10 @@ function legendItem(color, text) {
     return e
 }
 
-function initColorMapSelect() {
-    let e = document.getElementById("colormap-select")
-    e.addEventListener("change", setColormap)
-}
-
 function setColormap(e) {
     project.value.settings.selectedColorMapIndex = parseInt(e.target.value)
     update()
     updateLegend()
-}
-
-function updateColormapSelect() {
-    let e = document.getElementById("colormap-select")
-    for (const [index, colorMap] of project.value.colorMaps.entries()) {
-        let option = document.createElement("option")
-        option.textContent = colorMap.name
-        option.value = index
-        e.appendChild(option)
-    }
-    e.value = project.value.settings.selectedColorMapIndex
 }
 
 function saveLocalStorage() {
@@ -718,8 +706,6 @@ onMounted(() => {
     initializeMap()
     updateSidebar()
     updateLegend()
-    initColorMapSelect()
-    updateColormapSelect()
     updateDrawMode()
     setInterval(updateCurves, 50)
 })
