@@ -82,7 +82,6 @@ function initializeMap() {
     }).addTo(map);
 
     map.on('click', addControlPoint)
-    map.on('dblclick', finishPolyline)
     map.on('zoomend', updateMapView)
     map.on('moveend', updateMapView)
 
@@ -183,13 +182,6 @@ function insertPoint(latlng, insertIndex) {
         currentPolyline.points.splice(insertIndex + 1, 0, point)
     }
     update()
-}
-
-function finishPolyline() {
-    if (selectedCurveIndex != -1) {
-        project.curves[selectedCurveIndex].points.splice(-1, 1) // remove last
-        unselect()
-    }
 }
 
 function updateSidebar() {
