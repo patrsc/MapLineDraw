@@ -24,7 +24,7 @@
                 <div id="legend"></div>
             </div>
         </div>
-        <div id="map"></div>
+        <div id="map" ref="map"></div>
     </div>
 </template>
 
@@ -39,6 +39,8 @@ let map
 let selectedCurveIndex = -1
 let updating = false
 let drawMode = false
+
+const mapElement = useTemplateRef('map')
 
 let project = {
     info: {
@@ -65,7 +67,7 @@ function createMap() {
     let options = {
         doubleClickZoom: false,
     }
-    map = L.map('map', options)
+    map = L.map(mapElement.value, options)
 }
 
 function initializeMap() {
