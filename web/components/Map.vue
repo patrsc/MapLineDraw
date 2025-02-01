@@ -13,7 +13,7 @@
                 <p>Move points by dragging. Delete point by clicking.
                     Add intermediate points by clicking on control line.
                 </p>
-                <button id="btn-draw"></button>
+                <button class="btn-draw" @click="toggleDrawMode">{{ btnDrawText }}</button>
                 <h2 class="mt-3">Curves</h2>
             </div>
             <div id="polyline-list"></div>
@@ -24,7 +24,7 @@
                 <div id="legend"></div>
             </div>
         </div>
-        <div id="map" ref="map"></div>
+        <div id="map" ref="map-element"></div>
     </div>
 </template>
 
@@ -40,7 +40,9 @@ let selectedCurveIndex = -1
 let updating = false
 let drawMode = false
 
-const mapElement = useTemplateRef('map')
+const mapElement = useTemplateRef('map-element')
+
+const btnDrawText = ref("")
 
 let project = {
     info: {
@@ -85,7 +87,6 @@ function initializeMap() {
     map.on('moveend', updateMapView)
 
     document.addEventListener('keyup', handleKeyboardEvent)
-    document.getElementById("btn-draw").addEventListener("click", toggleDrawMode)
 }
 
 function getMapView() {
@@ -120,16 +121,15 @@ function toggleDrawMode(e) {
 }
 
 function updateDrawMode() {
-    const drawButton = document.getElementById("btn-draw")
     if (drawMode) {
-        drawButton.innerHTML = "Finish drawing"
+        btnDrawText.value = "Finish drawing"
         setLeafletCursor("crosshair")
     } else {
         setLeafletCursor("grab")
         if (selectedCurveIndex == -1) {
-            drawButton.innerHTML = "Draw new curve"
+            btnDrawText.value = "Draw new curve"
         } else {
-            drawButton.innerHTML = "Add points"
+            btnDrawText.value = "Add points"
         }
     }
 }
@@ -872,7 +872,7 @@ code {
     margin-right: 0.25rem;
 }
 
-#btn-draw {
+.btn-draw {
     margin-top: 0.25rem;
     width: 100%;
     min-width: 100%;
@@ -885,7 +885,7 @@ code {
     cursor: pointer;
 }
 
-#btn-draw:hover {
+.btn-draw:hover {
     opacity: 0.9;
 }
 
