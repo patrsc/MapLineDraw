@@ -13,7 +13,6 @@ from geo import arclen, curvature, speed
 app = FastAPI(title="Curve API")
 
 origins = [
-    "http://localhost:5173",
     "http://localhost:3000",
 ]
 
