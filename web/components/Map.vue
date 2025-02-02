@@ -200,7 +200,8 @@ function addControlPoint(e) {
         selectedCurveIndex.value = project.value.curves.length
         project.value.curves.push(newCurve("Curve"))
     }
-    insertPoint(e.latlng, selectedCurve.value.points.length)
+    const latlng = e.latlng
+    insertPoint(latlng.lat, latlng.lng, selectedCurve.value.points.length)
     requestCurveUpdate()
 }
 
@@ -213,8 +214,8 @@ function newCurve(name) {
     }
 }
 
-function newPoint(lat, lng) {
-    const point = L.circleMarker([lat, lng], {
+function newPoint(lat, lon) {
+    const point = L.circleMarker([lat, lon], {
         className: 'control-point',
         radius: 15,
         bubblingMouseEvents: false,
@@ -223,12 +224,11 @@ function newPoint(lat, lng) {
     return point
 }
 
-function insertPoint(latlng, insertIndex) {
-    // insert point at index (before the old element at that index)
-    const { lat, lng } = latlng
-    const point = newPoint(lat, lng)
+function insertPoint(lat, lon, index) {
+    // insert point at given index
+    const point = newPoint(lat, lon)
     const currentPolyline = selectedCurve.value
-    currentPolyline.points.splice(insertIndex, 0, point)
+    currentPolyline.points.splice(index, 0, point)
     update()
 }
 
@@ -413,7 +413,7 @@ function addIntermediatePoint(polyIndex, latlng) {
             insertIndex = i
         }
     }
-    insertPoint(latlng, insertIndex + 1)
+    insertPoint(latlng.lat, latlng.lng, insertIndex + 1)
 }
 
 function moveableMarker(map, marker) {
