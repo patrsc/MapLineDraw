@@ -171,9 +171,7 @@ function updateDrawMode() {
 }
 
 function setLeafletCursor(cursor) {
-    for (const e of document.getElementsByClassName('leaflet-container')) {
-        e.style.setProperty("cursor", cursor, "important")
-    }
+    mapElement.value.style.setProperty("cursor", cursor, "important")
 }
 
 function addControlPoint(e) {
