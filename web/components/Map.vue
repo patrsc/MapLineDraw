@@ -231,7 +231,7 @@ function insertPoint(lat, lon, index) {
     const point = { lat: lat, lon: lon }
     const currentPolyline = selectedCurve.value
     currentPolyline.points.splice(index, 0, point)
-    curvesCache[selectedCurveIndex.value].points.splice(index, 0, newPoint(lat, lon, index))
+    updateCache(selectedCurveIndex.value)
     update()
 }
 
@@ -454,12 +454,18 @@ function moveableMarker(map, marker, index) {
 function deletePoint(index) {
     const points = selectedCurve.value.points
     points.splice(index, 1)
-    curvesCache[selectedCurveIndex.value].points.splice(index, 1)
+    updateCache(selectedCurveIndex.value)
     if (points.length == 0) {
         deletePolyline(selectedCurveIndex.value)
     } else {
         update()
     }
+}
+
+function updateCache(curveIndex) {
+    // re-compute points of given curve
+    const f = (pt, i) => newPoint(pt.lat, pt.lon, i)
+    curvesCache[curveIndex].points = project.value.curves[curveIndex].points.map(f)
 }
 
 /**
