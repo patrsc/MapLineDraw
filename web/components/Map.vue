@@ -442,8 +442,7 @@ function moveableMarker(map, marker) {
         map.dragging.disable()
         map.on("mousemove", trackCursor)
     })
-    map.on("mouseup", dragEnd)
-    map.on("mouseout", dragEnd)
+    marker.on("mouseup", dragEnd)
 
     return marker
 }
