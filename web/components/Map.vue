@@ -218,10 +218,6 @@ function insertPoint(latlng, insertIndex) {
     update()
 }
 
-function updateSidebar() {
-    updateCurveList()
-}
-
 function updateCurveList() {
     const list = document.getElementById('polyline-list')
     list.innerHTML = ''
@@ -289,7 +285,7 @@ function selectPolyline(index) {
 }
 
 function update() {
-    updateSidebar()
+    updateCurveList()
     updatePolylines()
     updateDrawMode()
     saveLocalStorage()
@@ -673,7 +669,7 @@ onMounted(() => {
     createMap()
     loadLocalStorage()
     initializeMap()
-    updateSidebar()
+    updateCurveList()
     updateDrawMode()
     setInterval(updateCurves, 50)
 })
