@@ -120,10 +120,12 @@ const project = ref({
     }
 })
 
+let curvesCache = [] // {points, spline}
+
 const properties = computed(() => {
     const p = selectedCurve.value
     const nPoints = p.points.length
-    const data = p.spline.data
+    const data = curvesCache[selectedCurveIndex.value].spline.data
     let texts = [`Points: ${nPoints}`]
     if (data) {
         const distance = data.distance[data.distance.length - 1]
@@ -199,6 +201,7 @@ function addControlPoint(e) {
     if (!isCurveSelected.value) {
         selectedCurveIndex.value = project.value.curves.length
         project.value.curves.push(newCurve("Curve"))
+        curvesCache.push({points: [], spline: {requestedId: 0, id: 0, data: null}})
     }
     const latlng = e.latlng
     insertPoint(latlng.lat, latlng.lng, selectedCurve.value.points.length)
@@ -210,25 +213,25 @@ function newCurve(name) {
         name: name,
         points: [],
         closed: false,
-        spline: {requestedId: 0, id: 0, data: null}
     }
 }
 
-function newPoint(lat, lon) {
+function newPoint(lat, lon, index) {
     const point = L.circleMarker([lat, lon], {
         className: 'control-point',
         radius: 15,
         bubblingMouseEvents: false,
     })
-    moveableMarker(map, point)
+    moveableMarker(map, point, index)
     return point
 }
 
 function insertPoint(lat, lon, index) {
     // insert point at given index
-    const point = newPoint(lat, lon)
+    const point = { lat: lat, lon: lon }
     const currentPolyline = selectedCurve.value
     currentPolyline.points.splice(index, 0, point)
+    curvesCache[selectedCurveIndex.value].points.splice(index, 0, newPoint(lat, lon, index))
     update()
 }
 
@@ -248,6 +251,7 @@ function listItemClass(index) {
 
 function deletePolyline(index) {
     project.value.curves = project.value.curves.filter((p, i) => i !== index);
+    curvesCache = curvesCache.filter((p, i) => i !== index);
     unselect()
 }
 
@@ -293,18 +297,19 @@ function getSelectedColorMap() {
 function drawItems() {
     const colorMap = getSelectedColorMap()
     project.value.curves.forEach((p, polyIndex) => {
-        // drawSpline(p, polyIndex)
-        drawSplineColorMap(p, polyIndex, colorMap)
+        const cc = curvesCache[polyIndex]
+        // drawSpline(cc, polyIndex)
+        drawSplineColorMap(cc, polyIndex, colorMap)
         if (polyIndex == selectedCurveIndex.value) {
             drawControlLine(p, polyIndex)
-            drawPoints(p)
+            drawPoints(cc)
         }
     })
 }
 
-function drawPoints(p) {
-    p.points.forEach((point, pointIndex) => {
-        if (pointIndex == p.points.length - 1) {
+function drawPoints(curve) {
+    curve.points.forEach((point, pointIndex) => {
+        if (pointIndex == curve.points.length - 1) {
             point.options.className = 'control-point selected-point'
         } else {
             point.options.className = 'control-point'
@@ -375,7 +380,7 @@ function drawControlLine(currentPolyline, index) {
     const points = currentPolyline.points
     const closed = currentPolyline.closed
     if (points.length > 1) {
-        const coordinates = points.map(p => p.getLatLng())
+        const coordinates = points.map(p => [p.lat, p.lon])
         const line = L.polyline(coordinates, {
             className: cl,
             bubblingMouseEvents: false,
@@ -403,10 +408,10 @@ function addIntermediatePoint(polyIndex, latlng) {
     // Find point in polyline after which point should be inserted
     let insertIndex = 0
     let minDistance = Infinity
-    const p = latLngToXY(latlng)
+    const p = latLonToXY({ lat: latlng.lat, lon: latlng.lng })
     for (let i = 0; i < poly.points.length - 1; i++) {
-        const p1 = latLngToXY(poly.points[i].getLatLng())
-        const p2 = latLngToXY(poly.points[i + 1].getLatLng())
+        const p1 = latLonToXY(poly.points[i])
+        const p2 = latLonToXY(poly.points[i + 1])
         const d = pointSegmentDistance(p1, p2, p)
         if (d < minDistance) {
             minDistance = d
@@ -416,9 +421,10 @@ function addIntermediatePoint(polyIndex, latlng) {
     insertPoint(latlng.lat, latlng.lng, insertIndex + 1)
 }
 
-function moveableMarker(map, marker) {
-    function trackCursor(evt) {
-        marker.setLatLng(evt.latlng)
+function moveableMarker(map, marker, index) {
+    function trackCursor(e) {
+        marker.setLatLng(e.latlng)
+        selectedCurve.value.points[index] = {lat: e.latlng.lat, lon: e.latlng.lng}
         update()
         requestCurveUpdate()
     }
@@ -430,7 +436,7 @@ function moveableMarker(map, marker) {
         if (marker.getLatLng() == dragStartLatLng) {
             // marker was not moved -> delete
             dragStartLatLng = undefined
-            deletePoint(marker)
+            deletePoint(index)
             requestCurveUpdate()
         }
     }
@@ -445,19 +451,14 @@ function moveableMarker(map, marker) {
     return marker
 }
 
-function deletePoint(point) {
-    for (const [ polyIndex, poly ] of toRaw(project.value).curves.entries()) {
-        for (const [ index, currentPoint ] of poly.points.entries()) {
-            if (currentPoint === point) {
-                poly.points.splice(index, 1)
-                if (poly.points.length == 0) {
-                    deletePolyline(polyIndex)
-                } else {
-                    update()
-                }
-                return
-            }
-        }
+function deletePoint(index) {
+    const points = selectedCurve.value.points
+    points.splice(index, 1)
+    curvesCache[selectedCurveIndex.value].points.splice(index, 1)
+    if (points.length == 0) {
+        deletePolyline(selectedCurveIndex.value)
+    } else {
+        update()
     }
 }
 
@@ -518,15 +519,15 @@ function pointDistance(p1, p2) {
     return Math.sqrt(dx * dx + dy * dy)
 }
 
-function latLngToXY(p) {
+function latLonToXY(p) {
     // TODO
-    return { x: p.lng, y: p.lat }
+    return { x: p.lon, y: p.lat }
 }
 
 function requestCurveUpdate() {
     // request update of selected curve by incrementing requestedId
     if (isCurveSelected.value) {
-        project.value.curves[selectedCurveIndex.value].spline.requestedId++
+        curvesCache[selectedCurveIndex.value].spline.requestedId++
     }
 }
 
@@ -538,10 +539,10 @@ async function updateCurves() {
     // check if any curve needs update
     updating = true
     let anyUpdated = false
-    for (const p of project.value.curves) {
-        if (p.spline.id < p.spline.requestedId) {
+    for (const [index, c] of curvesCache.entries()) {
+        if (c.spline.id < c.spline.requestedId) {
             // needs update
-            await updateSpline(p)
+            await updateSpline(project.value.curves[index], c)
             anyUpdated = true
         }
     }
@@ -551,22 +552,22 @@ async function updateCurves() {
     updating = false
 }
 
-async function updateSpline(p) {
+async function updateSpline(p, c) {
     // load spline data via API
     if (p.points.length >= 2) {
-        p.spline.data = await loadSpline(p)
+        c.spline.data = await loadSpline(p)
     } else {
-        p.spline.data = null
+        c.spline.data = null
     }
-    p.spline.id = p.spline.requestedId
+    c.spline.id = c.spline.requestedId
 }
 
 async function loadSpline(p) {
-    const coordinates = p.points.map((p) => p.getLatLng())
+    const coordinates = p.points
     const data = {
         control: {
             lat: coordinates.map((c) => c.lat),
-            lon: coordinates.map((c) => c.lng),
+            lon: coordinates.map((c) => c.lon),
         },
         desired_degree: 3,
         closed: p.closed,
@@ -606,6 +607,12 @@ function loadLocalStorage() {
     if (s != null) {
         const p = JSON.parse(s)
         project.value = projectFromJson(p)
+        curvesCache = p.curves.map((c) => {
+            return {
+                points: c.controlPoints.map((pt, i) => newPoint(pt.lat, pt.lon, i)),
+                spline: {requestedId: 1, id: 0, data: null},
+            }
+        })
     }
 }
 
@@ -614,10 +621,7 @@ function projectToJson(project) {
         return {
             name: c.name,
             closed: c.closed,
-            controlPoints: c.points.map((p) => {
-                const latlng = p.getLatLng()
-                return {lat: latlng.lat, lon: latlng.lng}
-            })
+            controlPoints: c.points,
         }
     })
     return {
@@ -633,8 +637,7 @@ function projectFromJson(p) {
         return {
             name: c.name,
             closed: c.closed,
-            points: c.controlPoints.map((pt) => newPoint(pt.lat, pt.lon)),
-            spline: {requestedId: 1, id: 0, data: null}
+            points: c.controlPoints,
         }
     })
     return {
