@@ -120,6 +120,11 @@ const project = ref({
     }
 })
 
+let saveIdRequest = 0
+let saveId = 0
+
+watch(project, requestSave, {deep: true})
+
 let curvesCache = [] // {points, spline}
 
 const properties = computed(() => {
@@ -176,7 +181,6 @@ function updateMapView() {
     project.value.settings.map.center.lat = c.lat
     project.value.settings.map.center.lon = c.lng
     project.value.settings.map.zoom = z
-    saveLocalStorage()
 }
 
 function handleKeyboardEvent(e) {
@@ -273,11 +277,6 @@ function selectPolyline(index) {
 }
 
 function update() {
-    updatePolylines()
-    saveLocalStorage()
-}
-
-function updatePolylines() {
     deleteItems()
     drawItems()
 }
@@ -321,9 +320,10 @@ function drawPoints(curve) {
 function drawSpline(p, index) {
     const spline = p.spline
     if (spline.data) {
-        const coordinates = spline.data.lat.map((lat, i) => {
-            return { lat: lat, lng: spline.data.lon[i] }
-        })
+        const coordinates = []
+        for (let i = 0; i < spline.data.lat.length; i++) {
+            coordinates.push([spline.data.lat[i], spline.data.lon[i]])
+        }
         const options = {
             className: 'curve',
             bubblingMouseEvents: false,
@@ -337,14 +337,15 @@ function drawSpline(p, index) {
 function drawSplineColorMap(p, index, colorMap) {
     const spline = p.spline
     if (spline.data) {
-        const coordinates = spline.data.lat.map((lat, i) => {
-            return { lat: lat, lng: spline.data.lon[i] }
-        })
+        const coordinates = []
+        for (let i = 0; i < spline.data.lat.length; i++) {
+            coordinates.push([spline.data.lat[i], spline.data.lon[i]])
+        }
         const speeds = spline.data.speed
         let current = [coordinates[0]]
         let prevColor = null
         let prevFactor = null
-        for (let i = 1; i < speeds.length; i++) {
+        for (let i = 1; i < coordinates.length; i++) {
             const speedPrev = speeds[i - 1]
             const speed = speeds[i]
             const s = Math.min(speedPrev, speed)
@@ -601,10 +602,18 @@ function setColormap(e) {
     update()
 }
 
+function requestSave() {
+    saveIdRequest++;
+}
+
 function saveLocalStorage() {
     // save project to local storage
+    if (saveIdRequest == saveId) {
+        return
+    }
     const p = projectToJson(project.value)
     localStorage.setItem("project", JSON.stringify(p))
+    saveId = saveIdRequest
 }
 
 function loadLocalStorage() {
@@ -660,6 +669,7 @@ onMounted(() => {
     loadLocalStorage()
     initializeMap()
     setInterval(updateCurves, 50)
+    setInterval(saveLocalStorage, 1000)
 })
 
 </script>
