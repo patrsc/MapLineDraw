@@ -20,7 +20,22 @@
                 <button class="btn-draw" @click="toggleDrawMode">{{ btnDrawText }}</button>
                 <h2 class="mt-3">Curves</h2>
             </div>
-            <div id="polyline-list" class="polyline-list"></div>
+            <div class="polyline-list">
+                <div v-if="project.curves.length == 0" class="no-lines-placeholder">
+                    No curves yet.
+                </div>
+                <template v-for="(c, index) in project.curves">
+                    <div :class="listItemClass(index)" @click.stop="selectPolyline(index)">
+                        <div>{{ `${c.name} (${c.points.length} points)` }}</div>
+                        <div v-if="index == selectedCurveIndex">
+                            <button @click.stop="toggleClosed(c)">
+                                {{ (c.closed) ? "Open" : "Close" }}
+                            </button>
+                            <button @click.stop="deleteSelectedPolyline">Delete</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
             <div class="sidebar-text">
                 <div class="curve-props" v-if="isCurveSelected">
                     <h2 style="width: 100%">Properties</h2>
@@ -218,47 +233,17 @@ function insertPoint(latlng, insertIndex) {
     update()
 }
 
-function updateCurveList() {
-    const list = document.getElementById('polyline-list')
-    list.innerHTML = ''
-    project.value.curves.forEach((p, index) => {
-        const li = document.createElement('div')
-        li.className = 'list-item'
-        const t = document.createElement('div')
-        t.textContent = `${p.name} (${p.points.length} points)`
-        li.appendChild(t)
-        li.addEventListener('click', (e) => {
-            e.stopPropagation()
-            selectPolyline(index)
-        })
-        if (index == selectedCurveIndex.value) {
-            li.className += ' selected-item'
-            const right = document.createElement("div")
-            const btnClose = document.createElement('button')
-            btnClose.innerText = (p.closed) ? "Open" : "Close"
-            btnClose.addEventListener('click', (e) => {
-                e.stopPropagation()
-                p.closed = !p.closed
-                requestCurveUpdate()
-                update()
-            })
-            right.appendChild(btnClose)
-            const btn = document.createElement('button')
-            btn.innerText = "Delete"
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation()
-                deleteSelectedPolyline()
-            })
-            right.appendChild(btn)
-            li.appendChild(right)
-        }
-        list.appendChild(li)
-    })
-    if (project.value.curves.length == 0) {
-        const text = document.createElement("div")
-        text.textContent = 'No curves yet.'
-        text.className = "no-lines-placeholder"
-        list.appendChild(text)
+function toggleClosed(c) {
+    c.closed = !c.closed
+    requestCurveUpdate()
+    update()
+}
+
+function listItemClass(index) {
+    if (index == selectedCurveIndex.value) {
+        return ["list-item", "selected-item"]
+    } else {
+        return ["list-item"]
     }
 }
 
@@ -285,7 +270,6 @@ function selectPolyline(index) {
 }
 
 function update() {
-    updateCurveList()
     updatePolylines()
     updateDrawMode()
     saveLocalStorage()
@@ -669,7 +653,6 @@ onMounted(() => {
     createMap()
     loadLocalStorage()
     initializeMap()
-    updateCurveList()
     updateDrawMode()
     setInterval(updateCurves, 50)
 })
