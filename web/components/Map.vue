@@ -1,5 +1,9 @@
 <template>
-    <div class="map-app">
+    <div class="map-app"
+        @keyup.esc="unselect"
+        @keyup.delete="deleteSelectedPolyline"
+        @keyup="handleKeyboardEvent"
+    >
         <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
                 <h2>MapLineDraw</h2>
@@ -124,8 +128,6 @@ function initializeMap() {
     map.on('click', addControlPoint)
     map.on('zoomend', updateMapView)
     map.on('moveend', updateMapView)
-
-    document.addEventListener('keyup', handleKeyboardEvent)
 }
 
 function getMapView() {
@@ -143,12 +145,7 @@ function updateMapView() {
 }
 
 function handleKeyboardEvent(e) {
-    const key = e.key
-    if (key == 'Escape') {
-        unselect()
-    } else if (key == 'Delete' || key == 'Backspace') {
-        deleteSelectedPolyline()
-    } else if (key == 'd') {
+    if (e.key == 'd') {
         toggleDrawMode(e)
     }
 }
