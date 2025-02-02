@@ -17,7 +17,7 @@
                 <p>Move points by dragging. Delete point by clicking.
                     Add intermediate points by clicking on control line.
                 </p>
-                <button class="btn-draw" @click="toggleDrawMode">{{ btnDrawText }}</button>
+                <button class="btn-draw" @click.stop="toggleDrawMode">{{ btnDrawText }}</button>
                 <h2 class="mt-3">Curves</h2>
             </div>
             <div class="polyline-list">
@@ -75,11 +75,29 @@ const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
 const selectedColorMap = computed(() => getSelectedColorMap())
 
 let updating = false
-let drawMode = false
+let drawMode = ref(false)
 
 const mapElement = useTemplateRef('map-element')
 
-const btnDrawText = ref("")
+const btnDrawText = computed(() => {
+    if (drawMode.value) {
+        return "Finish drawing"
+    } else {
+        if (!isCurveSelected.value) {
+            return "Draw new curve"
+        } else {
+            return "Add points"
+        }
+    }
+})
+
+watch(drawMode, (newMode) => {
+    if (newMode) {
+        setLeafletCursor("crosshair")
+    } else {
+        setLeafletCursor("grab")
+    }
+})
 
 const project = ref({
     info: {
@@ -161,28 +179,12 @@ function updateMapView() {
 
 function handleKeyboardEvent(e) {
     if (e.key == 'd') {
-        toggleDrawMode(e)
+        toggleDrawMode()
     }
 }
 
-function toggleDrawMode(e) {
-    e.stopPropagation()
-    drawMode = !drawMode
-    updateDrawMode()
-}
-
-function updateDrawMode() {
-    if (drawMode) {
-        btnDrawText.value = "Finish drawing"
-        setLeafletCursor("crosshair")
-    } else {
-        setLeafletCursor("grab")
-        if (!isCurveSelected.value) {
-            btnDrawText.value = "Draw new curve"
-        } else {
-            btnDrawText.value = "Add points"
-        }
-    }
+function toggleDrawMode() {
+    drawMode.value = !drawMode.value
 }
 
 function setLeafletCursor(cursor) {
@@ -190,7 +192,7 @@ function setLeafletCursor(cursor) {
 }
 
 function addControlPoint(e) {
-    if (!drawMode) {
+    if (!drawMode.value) {
         unselect()
         return
     }
@@ -260,7 +262,7 @@ function deleteSelectedPolyline() {
 
 function unselect() {
     selectedCurveIndex.value = -1
-    drawMode = false
+    drawMode.value = false
     update()
 }
 
@@ -271,7 +273,6 @@ function selectPolyline(index) {
 
 function update() {
     updatePolylines()
-    updateDrawMode()
     saveLocalStorage()
 }
 
@@ -652,7 +653,6 @@ onMounted(() => {
     createMap()
     loadLocalStorage()
     initializeMap()
-    updateDrawMode()
     setInterval(updateCurves, 50)
 })
 
