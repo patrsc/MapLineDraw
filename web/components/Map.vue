@@ -328,7 +328,6 @@ function deleteItems(index) {
 function drawItems(polyIndex, colors, limits, factors) {
     const p = project.value.curves[polyIndex]
     const cc = curvesCache[polyIndex]
-    // drawSpline(cc, polyIndex)  // TODO: remove
     drawSplineColorMap(cc, polyIndex, colors, limits, factors)
     if (polyIndex == selectedCurveIndex.value) {
         drawControlLine(p, polyIndex)
@@ -346,25 +345,6 @@ function drawPoints(curve, curveIndex) {
         map.addLayer(point)
         curvesCache[curveIndex].layers.push(point)
     })
-}
-
-function drawSpline(p, index) {
-    // TODO: remove
-    const spline = p.spline
-    if (spline.data) {
-        const coordinates = []
-        for (let i = 0; i < spline.data.lat.length; i++) {
-            coordinates.push([spline.data.lat[i], spline.data.lon[i]])
-        }
-        const options = {
-            className: 'curve',
-            bubblingMouseEvents: false,
-        }
-        const line = L.polyline(coordinates, options)
-        map.addLayer(line)
-        line.on("click", () => selectPolyline(index))
-        curvesCache[index].layers.push(line)
-    }
 }
 
 function drawSplineColorMap(p, curveIndex, colors, limits, factors) {
@@ -589,7 +569,7 @@ function pointDistance(p1, p2) {
 }
 
 function latLonToXY(p) {
-    // TODO
+    // this approximation (although wrong) is sufficient for finding the closest point
     return { x: p.lon, y: p.lat }
 }
 
