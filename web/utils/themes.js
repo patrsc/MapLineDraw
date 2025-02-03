@@ -32,14 +32,3 @@ export const colorMaps = [
         items: lowspeedTrain.map(toObject),
     }
 ]
-
-export function getColor(speed, items) {
-    const f = 1.15
-    for (let i = items.length - 1; i >= 0; i--) {
-        const limit = items[i].limit
-        const color = items[i].color
-        if (speed < limit || limit === null) {
-            return [ color, Math.pow(f, i) ]
-        }
-    }
-}

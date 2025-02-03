@@ -64,7 +64,7 @@
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
 
-import { getColor, colorMaps } from "~/utils/themes"
+import { colorMaps } from "~/utils/themes"
 
 let map
 const selectedCurveIndex = ref(-1)
@@ -277,8 +277,10 @@ function selectPolyline(index) {
 }
 
 function update() {
+    const start = Date.now();
     deleteItems()
     drawItems()
+    console.log(`update: ${Date.now() - start} ms`);
 }
 
 function deleteItems() {
@@ -334,33 +336,64 @@ function drawSpline(p, index) {
     }
 }
 
-function drawSplineColorMap(p, index, colorMap) {
+function drawSplineColorMap(p, curveIndex, colorMap) {
     const spline = p.spline
     if (spline.data) {
         const coordinates = []
         for (let i = 0; i < spline.data.lat.length; i++) {
             coordinates.push([spline.data.lat[i], spline.data.lon[i]])
         }
+        const colorItemsReverse = colorMap.items.slice().reverse();
+        const colors = colorItemsReverse.map((c) => c.color)
+        const limits = colorItemsReverse.map((c) => c.limit).slice(0, -1)
+        const factors = colorMap.items.map((c, i) => Math.pow(1.15, i)).reverse()
         const speeds = spline.data.speed
         let current = [coordinates[0]]
-        let prevColor = null
-        let prevFactor = null
+        let prevColorIndex = -1
+        let colorIndex = 0  // initial guess
         for (let i = 1; i < coordinates.length; i++) {
             const speedPrev = speeds[i - 1]
             const speed = speeds[i]
             const s = Math.min(speedPrev, speed)
-            const [ color, factor ] = getColor(s, colorMap.items)
-            if (prevColor === null || color == prevColor) {
+            colorIndex = getColorIndex(s, limits, colorIndex)
+            if (prevColorIndex === -1 || colorIndex == prevColorIndex) {
                 current.push(coordinates[i])
             } else {
-                flushCurve(current, prevColor, prevFactor, index)
+                flushCurve(current, colors[prevColorIndex], factors[prevColorIndex], curveIndex)
                 current = [coordinates[i - 1]]
                 current.push(coordinates[i])
             }
-            prevColor = color
-            prevFactor = factor
+            prevColorIndex = colorIndex
         }
-        flushCurve(current, prevColor, prevFactor, index)
+        flushCurve(current, colors[prevColorIndex], factors[prevColorIndex], curveIndex)
+    }
+}
+
+function getColorIndex(value, limits, guessIndex) {
+    // hot code: implementation optimized for performance
+    let n = limits.length
+    let i = (guessIndex < n) ? guessIndex : (n - 1)
+    let isSmaller = value < limits[i]
+    let prevSmaller
+    while (true) {
+        if (!isSmaller) {
+            i++
+            if (i == n) {
+                return n
+            }
+            isSmaller = value < limits[i]
+        } else {
+            if (i == 0) {
+                return i
+            }
+            prevSmaller = value < limits[i - 1]
+            if (!prevSmaller) {
+                return i
+            } else {
+                isSmaller = prevSmaller
+                i--
+            }
+        }
     }
 }
 
