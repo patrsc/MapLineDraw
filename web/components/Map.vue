@@ -26,7 +26,7 @@
                 </div>
                 <template v-for="(c, index) in project.curves">
                     <div :class="listItemClass(index)" @click.stop="selectPolyline(index)">
-                        <div>{{ `${c.name} (${c.points.length} points)` }}</div>
+                        <div>{{ `${c.name} (${c.controlPoints.length} points)` }}</div>
                         <div v-if="index == selectedCurveIndex">
                             <button @click.stop="toggleClosed(c)">
                                 {{ (c.closed) ? "Open" : "Close" }}
@@ -130,7 +130,7 @@ let numUpdates = ref(0)
 
 const properties = computed(() => {
     const p = selectedCurve.value
-    const nPoints = p.points.length
+    const nPoints = p.controlPoints.length
     const data = curvesCache[selectedCurveIndex.value].spline.data
     numUpdates.value // read only to update when curvesCache updated
     let texts = [`Points: ${nPoints}`]
@@ -210,14 +210,14 @@ function addControlPoint(e) {
         curvesCache.push({points: [], spline: {requestedId: 0, id: 0, data: null}, layers: []})
     }
     const latlng = e.latlng
-    insertPoint(latlng.lat, latlng.lng, selectedCurve.value.points.length)
+    insertPoint(latlng.lat, latlng.lng, selectedCurve.value.controlPoints.length)
     requestCurveUpdate()
 }
 
 function newCurve(name) {
     return {
         name: name,
-        points: [],
+        controlPoints: [],
         closed: false,
     }
 }
@@ -236,7 +236,7 @@ function insertPoint(lat, lon, index) {
     // insert point at given index
     const point = { lat: lat, lon: lon }
     const currentPolyline = selectedCurve.value
-    currentPolyline.points.splice(index, 0, point)
+    currentPolyline.controlPoints.splice(index, 0, point)
     updateCache(selectedCurveIndex.value)
     updateSingle(selectedCurveIndex.value)
 }
@@ -417,7 +417,7 @@ function flushCurve(coordinates, color, factor, index) {
 
 function drawControlLine(currentPolyline, index) {
     const cl = 'control-line selected-line'
-    const points = currentPolyline.points
+    const points = currentPolyline.controlPoints
     const closed = currentPolyline.closed
     if (points.length > 1) {
         const coordinates = points.map(p => [p.lat, p.lon])
@@ -452,9 +452,9 @@ function addIntermediatePoint(polyIndex, latlng) {
     let insertIndex = 0
     let minDistance = Infinity
     const p = latLonToXY({ lat: latlng.lat, lon: latlng.lng })
-    for (let i = 0; i < poly.points.length - 1; i++) {
-        const p1 = latLonToXY(poly.points[i])
-        const p2 = latLonToXY(poly.points[i + 1])
+    for (let i = 0; i < poly.controlPoints.length - 1; i++) {
+        const p1 = latLonToXY(poly.controlPoints[i])
+        const p2 = latLonToXY(poly.controlPoints[i + 1])
         const d = pointSegmentDistance(p1, p2, p)
         if (d < minDistance) {
             minDistance = d
@@ -467,7 +467,7 @@ function addIntermediatePoint(polyIndex, latlng) {
 function moveableMarker(map, marker, index) {
     function trackCursor(e) {
         marker.setLatLng(e.latlng)
-        selectedCurve.value.points[index] = {lat: e.latlng.lat, lon: e.latlng.lng}
+        selectedCurve.value.controlPoints[index] = {lat: e.latlng.lat, lon: e.latlng.lng}
         updateSingle(selectedCurveIndex.value)
         requestCurveUpdate()
     }
@@ -495,7 +495,7 @@ function moveableMarker(map, marker, index) {
 }
 
 function deletePoint(index) {
-    const points = selectedCurve.value.points
+    const points = selectedCurve.value.controlPoints
     points.splice(index, 1)
     updateCache(selectedCurveIndex.value)
     if (points.length == 0) {
@@ -508,7 +508,7 @@ function deletePoint(index) {
 function updateCache(curveIndex) {
     // re-compute points of given curve
     const f = (pt, i) => newPoint(pt.lat, pt.lon, i)
-    curvesCache[curveIndex].points = project.value.curves[curveIndex].points.map(f)
+    curvesCache[curveIndex].points = project.value.curves[curveIndex].controlPoints.map(f)
 }
 
 /**
@@ -603,7 +603,7 @@ async function updateCurves() {
 
 async function updateSpline(p, c) {
     // load spline data via API
-    if (p.points.length >= 2) {
+    if (p.controlPoints.length >= 2) {
         c.spline.data = await loadSpline(p)
     } else {
         c.spline.data = null
@@ -612,7 +612,7 @@ async function updateSpline(p, c) {
 }
 
 async function loadSpline(p) {
-    const coordinates = p.points
+    const coordinates = p.controlPoints
     const data = {
         control: {
             lat: coordinates.map((c) => c.lat),
@@ -653,8 +653,7 @@ function saveLocalStorage() {
     if (saveIdRequest == saveId) {
         return
     }
-    const p = projectToJson(project.value)
-    localStorage.setItem("project", JSON.stringify(p))
+    localStorage.setItem("project", JSON.stringify(project.value))
     saveId = saveIdRequest
 }
 
@@ -662,47 +661,14 @@ function loadLocalStorage() {
     // load project from local storage (if any was saved before)
     const s = localStorage.getItem("project")
     if (s != null) {
-        const p = JSON.parse(s)
-        project.value = projectFromJson(p)
-        curvesCache = p.curves.map((c) => {
+        project.value = JSON.parse(s)
+        curvesCache = project.value.curves.map((c) => {
             return {
                 points: c.controlPoints.map((pt, i) => newPoint(pt.lat, pt.lon, i)),
                 spline: {requestedId: 1, id: 0, data: null},
                 layers: [],
             }
         })
-    }
-}
-
-function projectToJson(project) {
-    const curves = project.curves.map((c) => {
-        return {
-            name: c.name,
-            closed: c.closed,
-            controlPoints: c.points,
-        }
-    })
-    return {
-        info: project.info,
-        curves: curves,
-        settings: project.settings,
-        colorMaps: project.colorMaps,
-    }
-}
-
-function projectFromJson(p) {
-    const curves = p.curves.map((c) => {
-        return {
-            name: c.name,
-            closed: c.closed,
-            points: c.controlPoints,
-        }
-    })
-    return {
-        info: p.info,
-        curves: curves,
-        settings: p.settings,
-        colorMaps: p.colorMaps,
     }
 }
 
