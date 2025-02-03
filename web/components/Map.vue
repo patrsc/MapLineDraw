@@ -238,13 +238,13 @@ function insertPoint(lat, lon, index) {
     const currentPolyline = selectedCurve.value
     currentPolyline.points.splice(index, 0, point)
     updateCache(selectedCurveIndex.value)
-    update()
+    updateSingle(selectedCurveIndex.value)
 }
 
 function toggleClosed(c) {
     c.closed = !c.closed
     requestCurveUpdate()
-    update()
+    updateSingle(selectedCurveIndex.value)
 }
 
 function listItemClass(index) {
@@ -269,14 +269,21 @@ function deleteSelectedPolyline() {
 }
 
 function unselect() {
+    const oldIndex = selectedCurveIndex.value
     selectedCurveIndex.value = -1
     drawMode.value = false
-    update()
+    if (oldIndex != -1) {
+        updateSingle(oldIndex)
+    }
 }
 
 function selectPolyline(index) {
+    const oldIndex = selectedCurveIndex.value
     selectedCurveIndex.value = index
-    update()
+    updateSingle(selectedCurveIndex.value)
+    if (oldIndex != -1) {
+        updateSingle(oldIndex)
+    }
 }
 
 function getSelectedColorMap() {
@@ -513,7 +520,7 @@ function deletePoint(index) {
     if (points.length == 0) {
         deletePolyline(selectedCurveIndex.value)
     } else {
-        update()
+        updateSingle(selectedCurveIndex.value)
     }
 }
 
