@@ -125,7 +125,7 @@ let saveId = 0
 
 watch(project, requestSave, {deep: true})
 
-let curvesCache = [] // {points, spline}
+let curvesCache = [] // {points, spline, layers}
 
 const properties = computed(() => {
     const p = selectedCurve.value
@@ -205,7 +205,7 @@ function addControlPoint(e) {
     if (!isCurveSelected.value) {
         selectedCurveIndex.value = project.value.curves.length
         project.value.curves.push(newCurve("Curve"))
-        curvesCache.push({points: [], spline: {requestedId: 0, id: 0, data: null}})
+        curvesCache.push({points: [], spline: {requestedId: 0, id: 0, data: null}, layers: []})
     }
     const latlng = e.latlng
     insertPoint(latlng.lat, latlng.lng, selectedCurve.value.points.length)
@@ -276,39 +276,55 @@ function selectPolyline(index) {
     update()
 }
 
-function update() {
-    const start = Date.now();
-    deleteItems()
-    drawItems()
-    console.log(`update: ${Date.now() - start} ms`);
-}
-
-function deleteItems() {
-    map.eachLayer(layer => {
-        if (layer instanceof L.Polyline || layer instanceof L.CircleMarker) {
-            map.removeLayer(layer)
-        }
-    })
-}
-
 function getSelectedColorMap() {
     return project.value.colorMaps[project.value.settings.selectedColorMapIndex]
 }
 
-function drawItems() {
+function getPreparedColorMap() {
     const colorMap = getSelectedColorMap()
-    project.value.curves.forEach((p, polyIndex) => {
-        const cc = curvesCache[polyIndex]
-        // drawSpline(cc, polyIndex)
-        drawSplineColorMap(cc, polyIndex, colorMap)
-        if (polyIndex == selectedCurveIndex.value) {
-            drawControlLine(p, polyIndex)
-            drawPoints(cc)
-        }
-    })
+    const colorItemsReverse = colorMap.items.slice().reverse();
+    const colors = colorItemsReverse.map((c) => c.color)
+    const limits = colorItemsReverse.map((c) => c.limit).slice(0, -1)
+    const factors = colorMap.items.map((c, i) => Math.pow(1.15, i)).reverse()
+    return { colors, limits, factors }
 }
 
-function drawPoints(curve) {
+function update() {
+    const { colors, limits, factors } = getPreparedColorMap()
+    for (let i = 0; i < project.value.curves.length; i++) {
+        updateCurve(i, colors, limits, factors)
+    }
+}
+
+function updateSingle(index) {
+    const { colors, limits, factors } = getPreparedColorMap()
+    updateCurve(index, colors, limits, factors)
+}
+
+function updateCurve(index, colors, limits, factors) {
+    deleteItems(index)
+    drawItems(index, colors, limits, factors)
+}
+
+function deleteItems(index) {
+    for (let layer of curvesCache[index].layers) {
+        map.removeLayer(layer)
+    }
+    curvesCache[index].layers = []
+}
+
+function drawItems(polyIndex, colors, limits, factors) {
+    const p = project.value.curves[polyIndex]
+    const cc = curvesCache[polyIndex]
+    // drawSpline(cc, polyIndex)  // TODO: remove
+    drawSplineColorMap(cc, polyIndex, colors, limits, factors)
+    if (polyIndex == selectedCurveIndex.value) {
+        drawControlLine(p, polyIndex)
+        drawPoints(cc, polyIndex)
+    }
+}
+
+function drawPoints(curve, curveIndex) {
     curve.points.forEach((point, pointIndex) => {
         if (pointIndex == curve.points.length - 1) {
             point.options.className = 'control-point selected-point'
@@ -316,10 +332,12 @@ function drawPoints(curve) {
             point.options.className = 'control-point'
         }
         map.addLayer(point)
+        curvesCache[curveIndex].layers.push(point)
     })
 }
 
 function drawSpline(p, index) {
+    // TODO: remove
     const spline = p.spline
     if (spline.data) {
         const coordinates = []
@@ -333,35 +351,30 @@ function drawSpline(p, index) {
         const line = L.polyline(coordinates, options)
         map.addLayer(line)
         line.on("click", () => selectPolyline(index))
+        curvesCache[index].layers.push(line)
     }
 }
 
-function drawSplineColorMap(p, curveIndex, colorMap) {
+function drawSplineColorMap(p, curveIndex, colors, limits, factors) {
     const spline = p.spline
     if (spline.data) {
-        const coordinates = []
-        for (let i = 0; i < spline.data.lat.length; i++) {
-            coordinates.push([spline.data.lat[i], spline.data.lon[i]])
-        }
-        const colorItemsReverse = colorMap.items.slice().reverse();
-        const colors = colorItemsReverse.map((c) => c.color)
-        const limits = colorItemsReverse.map((c) => c.limit).slice(0, -1)
-        const factors = colorMap.items.map((c, i) => Math.pow(1.15, i)).reverse()
+        const lat = spline.data.lat
+        const lon = spline.data.lon
         const speeds = spline.data.speed
-        let current = [coordinates[0]]
+        let current = [[lat[0], lon[0]]]
         let prevColorIndex = -1
         let colorIndex = 0  // initial guess
-        for (let i = 1; i < coordinates.length; i++) {
+        for (let i = 1; i < lat.length; i++) {
             const speedPrev = speeds[i - 1]
             const speed = speeds[i]
             const s = Math.min(speedPrev, speed)
             colorIndex = getColorIndex(s, limits, colorIndex)
             if (prevColorIndex === -1 || colorIndex == prevColorIndex) {
-                current.push(coordinates[i])
+                current.push([lat[i], lon[i]])
             } else {
                 flushCurve(current, colors[prevColorIndex], factors[prevColorIndex], curveIndex)
-                current = [coordinates[i - 1]]
-                current.push(coordinates[i])
+                current = [[lat[i - 1], lon[i - 1]]]
+                current.push([lat[i], lon[i]])
             }
             prevColorIndex = colorIndex
         }
@@ -407,6 +420,7 @@ function flushCurve(coordinates, color, factor, index) {
     const line = L.polyline(coordinates, options)
     map.addLayer(line)
     line.on("click", () => selectPolyline(index))
+    curvesCache[index].layers.push(line)
 }
 
 function drawControlLine(currentPolyline, index) {
@@ -421,6 +435,7 @@ function drawControlLine(currentPolyline, index) {
         })
         line.on("click", (e) => lineClick(e, index))
         map.addLayer(line)
+        curvesCache[index].layers.push(line)
     }
     if (points.length > 2 && closed) {
         const coordinates = [points[points.length - 1].getLatLng(), points[0].getLatLng()]
@@ -429,6 +444,7 @@ function drawControlLine(currentPolyline, index) {
             bubblingMouseEvents: false,
         })
         map.addLayer(line)
+        curvesCache[index].layers.push(line)
     }
 }
 
@@ -459,7 +475,7 @@ function moveableMarker(map, marker, index) {
     function trackCursor(e) {
         marker.setLatLng(e.latlng)
         selectedCurve.value.points[index] = {lat: e.latlng.lat, lon: e.latlng.lng}
-        update()
+        updateSingle(selectedCurveIndex.value)
         requestCurveUpdate()
     }
     let dragStartLatLng
@@ -578,16 +594,16 @@ async function updateCurves() {
     }
     // check if any curve needs update
     updating = true
-    let anyUpdated = false
+    let indicesUdated = []
     for (const [index, c] of curvesCache.entries()) {
         if (c.spline.id < c.spline.requestedId) {
             // needs update
             await updateSpline(project.value.curves[index], c)
-            anyUpdated = true
+            indicesUdated.push(index)
         }
     }
-    if (anyUpdated) {
-        update()
+    for (let index of indicesUdated) {
+        updateSingle(index)
     }
     updating = false
 }
@@ -659,6 +675,7 @@ function loadLocalStorage() {
             return {
                 points: c.controlPoints.map((pt, i) => newPoint(pt.lat, pt.lon, i)),
                 spline: {requestedId: 1, id: 0, data: null},
+                layers: [],
             }
         })
     }
