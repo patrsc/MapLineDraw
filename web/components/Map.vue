@@ -438,7 +438,8 @@ function drawControlLine(currentPolyline, index) {
         curvesCache[index].layers.push(line)
     }
     if (points.length > 2 && closed) {
-        const coordinates = [points[points.length - 1].getLatLng(), points[0].getLatLng()]
+        const latlng = (p) => [p.lat, p.lon]
+        const coordinates = [latlng(points[points.length - 1]), latlng(points[0])]
         const line = L.polyline(coordinates, {
             className: cl + ' thin-line',
             bubblingMouseEvents: false,
