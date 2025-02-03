@@ -256,9 +256,10 @@ function listItemClass(index) {
 }
 
 function deletePolyline(index) {
-    project.value.curves = project.value.curves.filter((p, i) => i !== index);
     deleteItems(index)
+    project.value.curves = project.value.curves.filter((p, i) => i !== index);
     curvesCache = curvesCache.filter((p, i) => i !== index);
+    selectedCurveIndex.value = -1
     unselect()
 }
 
