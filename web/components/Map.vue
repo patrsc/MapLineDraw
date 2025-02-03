@@ -126,11 +126,13 @@ let saveId = 0
 watch(project, requestSave, {deep: true})
 
 let curvesCache = [] // {points, spline, layers}
+let numUpdates = ref(0)
 
 const properties = computed(() => {
     const p = selectedCurve.value
     const nPoints = p.points.length
     const data = curvesCache[selectedCurveIndex.value].spline.data
+    numUpdates.value // read only to update when curvesCache updated
     let texts = [`Points: ${nPoints}`]
     if (data) {
         const distance = data.distance[data.distance.length - 1]
@@ -255,6 +257,7 @@ function listItemClass(index) {
 
 function deletePolyline(index) {
     project.value.curves = project.value.curves.filter((p, i) => i !== index);
+    deleteItems(index)
     curvesCache = curvesCache.filter((p, i) => i !== index);
     unselect()
 }
@@ -304,6 +307,7 @@ function updateSingle(index) {
 function updateCurve(index, colors, limits, factors) {
     deleteItems(index)
     drawItems(index, colors, limits, factors)
+    numUpdates.value++
 }
 
 function deleteItems(index) {
