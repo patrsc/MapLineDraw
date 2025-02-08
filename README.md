@@ -74,7 +74,6 @@ Features:
 * transfer curve computation to JavaScript
 * Bootstrap
 * Font Awesome
-* Typescript
 * host online
 * low prio:
   * curvature plot preview over distance with point "sync"
