@@ -361,7 +361,7 @@ function drawSplineColorMap(p: CurveCacheItem, curveIndex: number, cm: PreparedC
         const lat = spline.data.lat
         const lon = spline.data.lon
         const speeds = spline.data.speed
-        let current = [[lat[0], lon[0]]]
+        let current: [number, number][] = [[lat[0], lon[0]]]
         let prevColorIndex = -1
         let colorIndex = 0  // initial guess
         for (let i = 1; i < lat.length; i++) {
@@ -410,11 +410,11 @@ function getColorIndex(value: number, limits: number[], guessIndex: number) {
     }
 }
 
-function flushCurve(coordinates, color, factor, index) {
+function flushCurve(coordinates: [number, number][], color: string, factor: number, index: number) {
     const options = {
         color: color,
         weight: 4 * factor,
-        lineCap: 'butt',
+        lineCap: 'butt' as const,
         bubblingMouseEvents: false,
     }
     const line = L.polyline(coordinates, options)
@@ -423,12 +423,13 @@ function flushCurve(coordinates, color, factor, index) {
     curvesCache[index].layers.push(line)
 }
 
-function drawControlLine(currentPolyline, index: number) {
+function drawControlLine(currentPolyline: Curve, index: number) {
     const cl = 'control-line selected-line'
     const points = currentPolyline.controlPoints
     const closed = currentPolyline.closed
+    const latlng = (p: GlobePoint): [number, number] => [p.lat, p.lon]
     if (points.length > 1) {
-        const coordinates = points.map(p => [p.lat, p.lon])
+        const coordinates = points.map(latlng)
         const line = L.polyline(coordinates, {
             className: cl,
             bubblingMouseEvents: false,
@@ -438,7 +439,6 @@ function drawControlLine(currentPolyline, index: number) {
         curvesCache[index].layers.push(line)
     }
     if (points.length > 2 && closed) {
-        const latlng = (p) => [p.lat, p.lon]
         const coordinates = [latlng(points[points.length - 1]), latlng(points[0])]
         const line = L.polyline(coordinates, {
             className: cl + ' thin-line',
@@ -449,7 +449,7 @@ function drawControlLine(currentPolyline, index: number) {
     }
 }
 
-function lineClick(e, index: number) {
+function lineClick(e: L.LeafletMouseEvent, index: number) {
     addIntermediatePoint(index, e.latlng)
     requestCurveUpdate()
 }
@@ -461,13 +461,14 @@ function addIntermediatePoint(polyIndex: number, latlng: L.LatLng) {
 }
 
 function moveableMarker(map: L.Map, marker: L.CircleMarker, index: number) {
-    function trackCursor(e) {
+    function trackCursor(e: L.LeafletMouseEvent) {
         marker.setLatLng(e.latlng)
+        if (!selectedCurve.value) return
         selectedCurve.value.controlPoints[index] = {lat: e.latlng.lat, lon: e.latlng.lng}
         updateSingle(selectedCurveIndex.value)
         requestCurveUpdate()
     }
-    let dragStartLatLng
+    let dragStartLatLng: L.LatLng | undefined = undefined
 
     function dragEnd() {
         map.dragging.enable()
@@ -574,8 +575,9 @@ async function loadSpline(p: Curve): Promise<null | SplineData> {
     }
 }
 
-function setColormap(e) {
-    project.value.settings.selectedColorMapIndex = parseInt(e.target.value)
+function setColormap(e: Event) {
+    const target = e.target as HTMLSelectElement
+    project.value.settings.selectedColorMapIndex = parseInt(target.value)
     update()
 }
 
