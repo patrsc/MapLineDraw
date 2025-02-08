@@ -1,4 +1,6 @@
-const highspeedTrain = [
+import type { ColorMapDef, ColorMapDefItem, ColorMapItem, ColorMap } from "~/types"
+
+const highspeedTrain: ColorMapDef = [
     [null, '#9C59FF', '400+'],
     [400, '#009B33', '350+'],
     [350, '#00D219', '300+'],
@@ -8,7 +10,7 @@ const highspeedTrain = [
     [160, '#FF0000', '<160'],
 ]
 
-const lowspeedTrain = [
+const lowspeedTrain: ColorMapDef = [
     [null, '#9C59FF', '200+'],
     [200, '#009B33', '160+'],
     [160, '#00D219', '120+'],
@@ -18,17 +20,17 @@ const lowspeedTrain = [
     [60, '#FF0000', '<60'],
 ]
 
-function toObject(item) {
+function toObject(item: ColorMapDefItem): ColorMapItem {
     return {limit: item[0], color: item[1], label: item[2]}
 }
 
-export const colorMaps = [
+export const colorMaps: ColorMap[] = [
     {
         name: "High-speed train",
         items: highspeedTrain.map(toObject),
     },
     {
-        name: "Low-speed train",
+        name: "Low-speed train1",
         items: lowspeedTrain.map(toObject),
     }
 ]
