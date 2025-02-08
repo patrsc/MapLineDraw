@@ -59,7 +59,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
