@@ -15,3 +15,13 @@ export interface ColorMap {
     name: string
     items: ColorMapItem[]
 }
+
+// Coordinates
+export interface CartesianPoint {
+    x: number
+    y: number
+}
+export interface GlobePoint {
+    lat: number
+    lon: number
+}
