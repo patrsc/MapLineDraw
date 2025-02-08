@@ -61,13 +61,15 @@
 
 <script setup lang="ts">
 
+import type { CurveCache, Project, Curve, PreparedColorMap, CurveCacheItem, GlobePoint, SplineData } from "~/types"
+
 import L from "leaflet"
 import 'leaflet/dist/leaflet.css'
 
 import { colorMaps } from "~/utils/themes"
 import { findNearestIndexOnLine } from "~/utils/geo"
 
-let map
+let map: L.Map
 const selectedCurveIndex = ref(-1)
 const selectedCurve = computed(() => {
     return (selectedCurveIndex.value == -1) ? null : project.value.curves[selectedCurveIndex.value]
@@ -102,7 +104,7 @@ watch(drawMode, (newMode) => {
     }
 })
 
-const project = ref({
+const project = ref<Project>({
     info: {
         name: "Project",
         description: "",
@@ -128,11 +130,14 @@ let saveId = 0
 
 watch(project, requestSave, {deep: true})
 
-let curvesCache = [] // {points, spline, layers}
+let curvesCache: CurveCache = []
 let numUpdates = ref(0)
 
 const properties = computed(() => {
     const p = selectedCurve.value
+    if (p == null) {
+        return []
+    }
     const nPoints = p.controlPoints.length
     const data = curvesCache[selectedCurveIndex.value].spline.data
     numUpdates.value // read only to update when curvesCache updated
@@ -141,20 +146,22 @@ const properties = computed(() => {
         const distance = data.distance[data.distance.length - 1]
         const maxCurvature = Math.max(...data.curvature.map(Math.abs))
         let minRadius = 1/maxCurvature
+        let minRadiusText = ""
         if (minRadius >= 1e6) {
-            minRadius = "∞"
+            minRadiusText = "∞"
         } else {
-            minRadius = minRadius.toFixed(0)
+            minRadiusText = minRadius.toFixed(0)
         }
         const minSpeed = Math.min(...data.speed)
         texts.push(`Length: ${(distance/1000).toFixed(1)} km`)
-        texts.push(`Radius: ${minRadius} m`)
+        texts.push(`Radius: ${minRadiusText} m`)
         texts.push(`Speed: ${(minSpeed).toFixed(0)} km/h`)
     }
     return texts
 })
 
 function createMap() {
+    if (!mapElement.value) return
     let options = {
         doubleClickZoom: false,
     }
@@ -175,7 +182,7 @@ function initializeMap() {
     map.on('moveend', updateMapView)
 }
 
-function getMapView() {
+function getMapView(): [[number, number], number] {
     const m = project.value.settings.map
     return [[m.center.lat, m.center.lon], m.zoom]
 }
@@ -188,7 +195,7 @@ function updateMapView() {
     project.value.settings.map.zoom = z
 }
 
-function handleKeyboardEvent(e) {
+function handleKeyboardEvent(e: KeyboardEvent) {
     if (e.key == 'd') {
         toggleDrawMode()
     }
@@ -198,11 +205,11 @@ function toggleDrawMode() {
     drawMode.value = !drawMode.value
 }
 
-function setLeafletCursor(cursor) {
-    mapElement.value.style.setProperty("cursor", cursor, "important")
+function setLeafletCursor(cursor: "grab" | "crosshair") {
+    mapElement.value?.style.setProperty("cursor", cursor, "important")
 }
 
-function addControlPoint(e) {
+function addControlPoint(e: L.LeafletMouseEvent) {
     if (!drawMode.value) {
         unselect()
         return
@@ -213,11 +220,11 @@ function addControlPoint(e) {
         curvesCache.push({points: [], spline: {requestedId: 0, id: 0, data: null}, layers: []})
     }
     const latlng = e.latlng
-    insertPoint(latlng.lat, latlng.lng, selectedCurve.value.controlPoints.length)
+    insertPoint(latlng.lat, latlng.lng, selectedCurve.value!.controlPoints.length)
     requestCurveUpdate()
 }
 
-function newCurve(name) {
+function newCurve(name: string): Curve {
     return {
         name: name,
         controlPoints: [],
@@ -225,7 +232,7 @@ function newCurve(name) {
     }
 }
 
-function newPoint(lat, lon, index) {
+function newPoint(lat: number, lon: number, index: number) {
     const point = L.circleMarker([lat, lon], {
         className: 'control-point',
         radius: 15,
@@ -235,22 +242,23 @@ function newPoint(lat, lon, index) {
     return point
 }
 
-function insertPoint(lat, lon, index) {
+function insertPoint(lat: number, lon: number, index: number) {
     // insert point at given index
-    const point = { lat: lat, lon: lon }
+    const point = { lat, lon}
     const currentPolyline = selectedCurve.value
+    if (!currentPolyline) return
     currentPolyline.controlPoints.splice(index, 0, point)
     updateCache(selectedCurveIndex.value)
     updateSingle(selectedCurveIndex.value)
 }
 
-function toggleClosed(c) {
+function toggleClosed(c: Curve) {
     c.closed = !c.closed
     requestCurveUpdate()
     updateSingle(selectedCurveIndex.value)
 }
 
-function listItemClass(index) {
+function listItemClass(index: number) {
     if (index == selectedCurveIndex.value) {
         return ["list-item", "selected-item"]
     } else {
@@ -258,7 +266,7 @@ function listItemClass(index) {
     }
 }
 
-function deletePolyline(index) {
+function deletePolyline(index: number) {
     deleteItems(index)
     project.value.curves = project.value.curves.filter((p, i) => i !== index);
     curvesCache = curvesCache.filter((p, i) => i !== index);
@@ -281,7 +289,7 @@ function unselect() {
     }
 }
 
-function selectPolyline(index) {
+function selectPolyline(index: number) {
     const oldIndex = selectedCurveIndex.value
     selectedCurveIndex.value = index
     updateSingle(selectedCurveIndex.value)
@@ -290,51 +298,51 @@ function selectPolyline(index) {
     }
 }
 
-function getPreparedColorMap() {
+function getPreparedColorMap(): PreparedColorMap {
     const colorMap = selectedColorMap.value
     const colorItemsReverse = colorMap.items.slice().reverse();
     const colors = colorItemsReverse.map((c) => c.color)
-    const limits = colorItemsReverse.map((c) => c.limit).slice(0, -1)
+    const limits = colorItemsReverse.map((c) => c.limit).filter((c) => c != null)
     const factors = colorMap.items.map((c, i) => Math.pow(1.15, i)).reverse()
     return { colors, limits, factors }
 }
 
 function update() {
-    const { colors, limits, factors } = getPreparedColorMap()
+    const cm = getPreparedColorMap()
     for (let i = 0; i < project.value.curves.length; i++) {
-        updateCurve(i, colors, limits, factors)
+        updateCurve(i, cm)
     }
 }
 
-function updateSingle(index) {
-    const { colors, limits, factors } = getPreparedColorMap()
-    updateCurve(index, colors, limits, factors)
+function updateSingle(index: number) {
+    const cm = getPreparedColorMap()
+    updateCurve(index, cm)
 }
 
-function updateCurve(index, colors, limits, factors) {
+function updateCurve(index: number, cm: PreparedColorMap) {
     deleteItems(index)
-    drawItems(index, colors, limits, factors)
+    drawItems(index, cm)
     numUpdates.value++
 }
 
-function deleteItems(index) {
+function deleteItems(index: number) {
     for (let layer of curvesCache[index].layers) {
         map.removeLayer(layer)
     }
     curvesCache[index].layers = []
 }
 
-function drawItems(polyIndex, colors, limits, factors) {
+function drawItems(polyIndex: number, cm: PreparedColorMap) {
     const p = project.value.curves[polyIndex]
     const cc = curvesCache[polyIndex]
-    drawSplineColorMap(cc, polyIndex, colors, limits, factors)
+    drawSplineColorMap(cc, polyIndex, cm)
     if (polyIndex == selectedCurveIndex.value) {
         drawControlLine(p, polyIndex)
         drawPoints(cc, polyIndex)
     }
 }
 
-function drawPoints(curve, curveIndex) {
+function drawPoints(curve: CurveCacheItem, curveIndex: number) {
     curve.points.forEach((point, pointIndex) => {
         if (pointIndex == curve.points.length - 1) {
             point.options.className = 'control-point selected-point'
@@ -346,9 +354,10 @@ function drawPoints(curve, curveIndex) {
     })
 }
 
-function drawSplineColorMap(p, curveIndex, colors, limits, factors) {
+function drawSplineColorMap(p: CurveCacheItem, curveIndex: number, cm: PreparedColorMap) {
     const spline = p.spline
     if (spline.data) {
+        const { limits, colors, factors } = cm
         const lat = spline.data.lat
         const lon = spline.data.lon
         const speeds = spline.data.speed
@@ -373,7 +382,7 @@ function drawSplineColorMap(p, curveIndex, colors, limits, factors) {
     }
 }
 
-function getColorIndex(value, limits, guessIndex) {
+function getColorIndex(value: number, limits: number[], guessIndex: number) {
     // hot code: implementation optimized for performance
     let n = limits.length
     let i = (guessIndex < n) ? guessIndex : (n - 1)
@@ -414,7 +423,7 @@ function flushCurve(coordinates, color, factor, index) {
     curvesCache[index].layers.push(line)
 }
 
-function drawControlLine(currentPolyline, index) {
+function drawControlLine(currentPolyline, index: number) {
     const cl = 'control-line selected-line'
     const points = currentPolyline.controlPoints
     const closed = currentPolyline.closed
@@ -440,18 +449,18 @@ function drawControlLine(currentPolyline, index) {
     }
 }
 
-function lineClick(e, index) {
+function lineClick(e, index: number) {
     addIntermediatePoint(index, e.latlng)
     requestCurveUpdate()
 }
 
-function addIntermediatePoint(polyIndex, latlng) {
+function addIntermediatePoint(polyIndex: number, latlng: L.LatLng) {
     const poly = project.value.curves[polyIndex]
     const insertIndex = findNearestIndexOnLine(poly.controlPoints, latlng.lat, latlng.lng)
     insertPoint(latlng.lat, latlng.lng, insertIndex + 1)
 }
 
-function moveableMarker(map, marker, index) {
+function moveableMarker(map: L.Map, marker: L.CircleMarker, index: number) {
     function trackCursor(e) {
         marker.setLatLng(e.latlng)
         selectedCurve.value.controlPoints[index] = {lat: e.latlng.lat, lon: e.latlng.lng}
@@ -481,7 +490,8 @@ function moveableMarker(map, marker, index) {
     return marker
 }
 
-function deletePoint(index) {
+function deletePoint(index: number) {
+    if (!selectedCurve.value) return
     const points = selectedCurve.value.controlPoints
     points.splice(index, 1)
     updateCache(selectedCurveIndex.value)
@@ -492,9 +502,9 @@ function deletePoint(index) {
     }
 }
 
-function updateCache(curveIndex) {
+function updateCache(curveIndex: number) {
     // re-compute points of given curve
-    const f = (pt, i) => newPoint(pt.lat, pt.lon, i)
+    const f = (pt: GlobePoint, i: number) => newPoint(pt.lat, pt.lon, i)
     curvesCache[curveIndex].points = project.value.curves[curveIndex].controlPoints.map(f)
 }
 
@@ -526,7 +536,7 @@ async function updateCurves() {
     updating = false
 }
 
-async function updateSpline(p, c) {
+async function updateSpline(p: Curve, c: CurveCacheItem) {
     // load spline data via API
     if (p.controlPoints.length >= 2) {
         c.spline.data = await loadSpline(p)
@@ -536,12 +546,12 @@ async function updateSpline(p, c) {
     c.spline.id = c.spline.requestedId
 }
 
-async function loadSpline(p) {
+async function loadSpline(p: Curve): Promise<null | SplineData> {
     const coordinates = p.controlPoints
     const data = {
         control: {
-            lat: coordinates.map((c) => c.lat),
-            lon: coordinates.map((c) => c.lon),
+            lat: coordinates.map((c: GlobePoint) => c.lat),
+            lon: coordinates.map((c: GlobePoint) => c.lon),
         },
         desired_degree: 3,
         closed: p.closed,
