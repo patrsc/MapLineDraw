@@ -73,7 +73,9 @@ const selectedCurve = computed(() => {
     return (selectedCurveIndex.value == -1) ? null : project.value.curves[selectedCurveIndex.value]
 })
 const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
-const selectedColorMap = computed(() => getSelectedColorMap())
+const selectedColorMap = computed(() => {
+    return project.value.colorMaps[project.value.settings.selectedColorMapIndex]
+})
 
 let updating = false
 let drawMode = ref(false)
@@ -288,12 +290,8 @@ function selectPolyline(index) {
     }
 }
 
-function getSelectedColorMap() {
-    return project.value.colorMaps[project.value.settings.selectedColorMapIndex]
-}
-
 function getPreparedColorMap() {
-    const colorMap = getSelectedColorMap()
+    const colorMap = selectedColorMap.value
     const colorItemsReverse = colorMap.items.slice().reverse();
     const colors = colorItemsReverse.map((c) => c.color)
     const limits = colorItemsReverse.map((c) => c.limit).slice(0, -1)
