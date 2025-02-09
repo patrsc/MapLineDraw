@@ -7,4 +7,8 @@ export default defineNuxtConfig({
         typeCheck: true,
         strict: true,
     },
+    css: [
+        'bootstrap/dist/css/bootstrap.min.css',
+        '~/assets/main.scss',
+    ],
 })

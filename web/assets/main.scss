@@ -1,0 +1,26 @@
+// Global styles
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+.btn:hover, .page-link:hover, .nav-link:hover, .dropdown-item:hover, .navbar-brand:hover {
+    text-decoration: none;
+}
+.font-mono {
+    font-family: var(--bs-font-monospace);
+}
+.text-faded {
+    opacity: 0.75;
+}
+
+// Whitespace wrap
+.pre-wrap {
+    white-space: pre-wrap;
+}
+
+// Icon faded
+.text-icon {
+    opacity: 0.75;
+}
