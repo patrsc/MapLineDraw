@@ -42,7 +42,10 @@
                     <div v-for="text in properties">{{ text }}</div>
                 </div>
                 <h2 class="mt-3">Legend</h2>
-                <select @change="setColormap" @click.stop :value="project.settings.selectedColorMapIndex">
+                <select
+                    @change="setColormap" @click.stop
+                    :value="project.settings.selectedColorMapIndex"
+                >
                     <option v-for="(c, index) in project.colorMaps" :value="index">
                         {{ c.name }}
                     </option>
