@@ -9,7 +9,7 @@
                 <h2>MapLineDraw</h2>
                 <h4>Draw</h4>
                 <p>Click on different map positions to draw.
-                    Press <code>Esc</code> to finish. You can draw multiple curves.
+                    Press <kbd>Esc</kbd> to finish. You can draw multiple curves.
                 </p>
                 <h4>Select</h4>
                 <p>Click on a curve to select it.</p>
@@ -17,7 +17,11 @@
                 <p>Move points by dragging. Delete point by clicking.
                     Add intermediate points by clicking on control line.
                 </p>
-                <button class="btn-draw" @click.stop="toggleDrawMode">{{ btnDrawText }}</button>
+                <div class="d-grid gap-2">
+                    <button
+                        class="btn btn-primary" @click.stop="toggleDrawMode"
+                    >{{ btnDrawText }}</button>
+                </div>
                 <h2 class="mt-3">Curves</h2>
             </div>
             <div class="polyline-list">
@@ -198,30 +202,9 @@ onMounted(() => {
 </script>
 
 <style>
-html, body {
-    font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-        Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    margin: 0;
-}
-
-h2 {
-    margin-bottom: 0.5rem;
-    margin-top: 0;
-}
-h4 {
-    margin-bottom: 0.5rem;
-    margin-top: 1rem;
-}
-p {
-    font-size: 90%;
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-}
-
 .map-app {
     display: flex;
     height: 100vh;
-    margin: 0;
 }
 
 .sidebar {
@@ -231,10 +214,6 @@ p {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-}
-
-.mt-3 {
-    margin-top: 1rem;
 }
 
 .sidebar-text {
@@ -268,13 +247,6 @@ p {
     padding: 0rem 0.5rem;
 }
 
-code {
-    background-color: black;
-    padding: 0.2rem;
-    border-radius: 0.4rem;
-    color: white;
-}
-
 .curve-props {
     display: flex;
     flex-wrap: wrap;
@@ -300,23 +272,6 @@ code {
     height: 15px;
     margin-top: 2px;
     margin-right: 0.25rem;
-}
-
-.btn-draw {
-    margin-top: 0.25rem;
-    width: 100%;
-    min-width: 100%;
-    height: 40px;
-    background-color: green;
-    border: black solid 0px;
-    color: white;
-    border-radius: 0.5rem;
-    font-size: 100%;
-    cursor: pointer;
-}
-
-.btn-draw:hover {
-    opacity: 0.9;
 }
 
 </style>
