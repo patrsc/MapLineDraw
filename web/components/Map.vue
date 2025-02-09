@@ -174,7 +174,6 @@ function saveLocalStorage() {
     if (saveIdRequest == saveId) {
         return
     }
-    console.log("save")
     localStorage.setItem("project", JSON.stringify(project.value))
     saveId = saveIdRequest
 }

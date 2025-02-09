@@ -59,7 +59,6 @@ watch(props.colorMap, update)
 watch(selectedCurveIndex, selectPolyline)
 
 watch(curves, () => {
-    console.log("curves changed from outside")
     initCache()
 })
 
@@ -204,7 +203,6 @@ function insertPoint(lat: number, lon: number, index: number) {
 
 
 async function deletePolyline(index: number) {
-    console.log("deletePolyline", index)
     deleteItems(index)
     curves.value.splice(index, 1)
     curvesCache.splice(index, 1)
@@ -212,7 +210,6 @@ async function deletePolyline(index: number) {
 }
 
 function deleteSelectedPolyline() {
-    console.log("deleteSelectedPolyline")
     if (isCurveSelected.value) {
         deletePolyline(selectedCurveIndex.value)
     }
@@ -223,7 +220,6 @@ function unselect() {
 }
 
 function selectPolyline(index: number, oldIndex: number) {
-    console.log("selectPolyline", index, oldIndex)
     if (index == -1) {
         drawMode.value = false
     } else {
@@ -256,7 +252,6 @@ function updateSingle(index: number) {
 }
 
 function updateCurve(index: number, cm: PreparedColorMap) {
-    console.log("updateCurve", index)
     deleteItems(index)
     drawItems(index, cm)
 }
