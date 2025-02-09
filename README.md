@@ -42,6 +42,15 @@ Features:
   * re-publish resets timer
   * Import this project (discards current project) | Re-publish | Download | Copy link | Back to your project
   * project can only be accessed by link
+* transfer curve computation to JavaScript
+* host online
+
+## Later
+
+* curvature plot preview over distance with point "sync"
+* split curve at selected point
+* join curves: select endpoint of one curve, click merge, select endpoint of another curve
+* switch curve direction
 * altitude:
   * set altitude of control points:
     * value above sea: `float`
@@ -71,12 +80,3 @@ Features:
   * bridge: curve > 6m over ground (bright blue hairline on right curve side)
   * tunnel: curve > 6m under ground (brown hairline on left curve side)
   * display plot: curve altitude compared to ground altitude over distance
-* transfer curve computation to JavaScript
-* Bootstrap
-* Font Awesome
-* host online
-* low prio:
-  * curvature plot preview over distance with point "sync"
-  * split curve at selected point
-  * join curves: select endpoint of one curve, click merge, select endpoint of another curve
-  * switch curve direction
