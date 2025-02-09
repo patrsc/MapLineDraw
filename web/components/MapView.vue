@@ -74,7 +74,6 @@ watch(mapSettings, (settings) => {
 
 let updating = false
 let curvesCache: CurveCache = []
-console.log(curvesCache)
 
 function initCache() {
     curvesCache = curves.value.map((c) => {
@@ -204,14 +203,16 @@ function insertPoint(lat: number, lon: number, index: number) {
 }
 
 
-function deletePolyline(index: number) {
+async function deletePolyline(index: number) {
+    console.log("deletePolyline", index)
     deleteItems(index)
-    curves.value = curves.value.filter((p, i) => i !== index);
-    curvesCache = curvesCache.filter((p, i) => i !== index);
+    curves.value.splice(index, 1)
+    curvesCache.splice(index, 1)
     unselect()
 }
 
 function deleteSelectedPolyline() {
+    console.log("deleteSelectedPolyline")
     if (isCurveSelected.value) {
         deletePolyline(selectedCurveIndex.value)
     }
@@ -222,12 +223,13 @@ function unselect() {
 }
 
 function selectPolyline(index: number, oldIndex: number) {
+    console.log("selectPolyline", index, oldIndex)
     if (index == -1) {
         drawMode.value = false
     } else {
         updateSingle(index)
     }
-    if (oldIndex != -1) {
+    if (oldIndex != -1 && oldIndex < curves.value.length) {
         updateSingle(oldIndex)
     }
 }
@@ -254,9 +256,9 @@ function updateSingle(index: number) {
 }
 
 function updateCurve(index: number, cm: PreparedColorMap) {
+    console.log("updateCurve", index)
     deleteItems(index)
     drawItems(index, cm)
-    emit("select-curve", computeProperties())
 }
 
 function deleteItems(index: number) {
@@ -273,6 +275,7 @@ function drawItems(polyIndex: number, cm: PreparedColorMap) {
     if (polyIndex == selectedCurveIndex.value) {
         drawControlLine(p, polyIndex)
         drawPoints(cc, polyIndex)
+        emit("select-curve", computeProperties())
     }
 }
 
@@ -412,8 +415,10 @@ function moveableMarker(map: L.Map, marker: L.CircleMarker, index: number) {
         if (marker.getLatLng() == dragStartLatLng) {
             // marker was not moved -> delete
             dragStartLatLng = undefined
-            deletePoint(index)
-            requestCurveUpdate()
+            const n = deletePoint(index)
+            if (n > 0) {
+                requestCurveUpdate()
+            }
         }
     }
 
@@ -428,15 +433,17 @@ function moveableMarker(map: L.Map, marker: L.CircleMarker, index: number) {
 }
 
 function deletePoint(index: number) {
-    if (!selectedCurve.value) return
+    if (!selectedCurve.value) return 0
     const points = selectedCurve.value.controlPoints
     points.splice(index, 1)
     updateCache(selectedCurveIndex.value)
-    if (points.length == 0) {
+    const n = points.length
+    if (n == 0) {
         deletePolyline(selectedCurveIndex.value)
     } else {
         updateSingle(selectedCurveIndex.value)
     }
+    return n
 }
 
 function updateCache(curveIndex: number) {
