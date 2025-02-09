@@ -7,20 +7,22 @@
         <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
                 <h4>MapLineDraw</h4>
-                <p class="text-muted small">
-                    Sketch corridors of railway lines or roads on an interactive map.
-                    <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
-                    >GitHub</a>
-                </p>
-                <h4>Draw</h4>
-                <p>Click on different map positions to draw.
-                    Press <kbd>Esc</kbd> to finish. You can draw multiple curves.
-                </p>
-                <h4>Select</h4>
-                <p>Click on a curve to select it.</p>
-                <h4>Edit curve</h4>
-                <p>Move points by dragging. Delete point by clicking.
-                    Add intermediate points by clicking on control line.
+                <p class="text-muted small mt-2 mb-2 help-text">
+                    <template v-if="!drawMode">
+                        <span v-if="isCurveSelected">
+                            Move points by dragging. Delete point by clicking.
+                            Add intermediate points by clicking on control line.
+                        </span>
+                        <span v-else>
+                            Sketch corridors of railway lines or roads on an interactive map.<br>
+                            Free and open source.
+                            <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
+                            >View on GitHub</a>
+                        </span>
+                    </template>
+                    <span v-else>
+                        Click on different map positions to draw. Press <kbd>d</kbd> to finish.
+                    </span>
                 </p>
                 <div class="d-grid gap-2">
                     <button
@@ -155,6 +157,7 @@ function setProperties(p: string[]) {
 }
 
 function handleKeyboardEvent(e: KeyboardEvent) {
+    console.log(e)
     if (e.key == 'd') {
         toggleDrawMode()
     }
@@ -282,6 +285,10 @@ onMounted(() => {
     height: 15px;
     margin-top: 2px;
     margin-right: 0.25rem;
+}
+
+.help-text {
+    height: 63px;
 }
 
 </style>
