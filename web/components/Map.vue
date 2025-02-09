@@ -7,6 +7,11 @@
         <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
                 <h2>MapLineDraw</h2>
+                <p class="text-muted small">
+                    Sketch corridors of railway lines or roads on an interactive map.
+                    <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
+                    >GitHub</a>
+                </p>
                 <h4>Draw</h4>
                 <p>Click on different map positions to draw.
                     Press <kbd>Esc</kbd> to finish. You can draw multiple curves.
@@ -232,7 +237,8 @@ onMounted(() => {
     margin-bottom: 0.25rem;
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+    height: 47px;
 }
 .list-item:hover {
     background-color: #e3e3e3;
