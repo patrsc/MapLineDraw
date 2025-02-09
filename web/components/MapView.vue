@@ -54,7 +54,7 @@ watch(drawMode, (newMode) => {
     }
 })
 
-watch(props.colorMap, update)
+watch(() => props.colorMap, update)
 
 watch(selectedCurveIndex, selectPolyline)
 
