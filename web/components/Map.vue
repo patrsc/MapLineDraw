@@ -62,6 +62,7 @@
             v-model:curves="project.curves"
             v-model:selected-curve-index="selectedCurveIndex"
             v-model:draw-mode="drawMode"
+            @select-curve="setProperties"
         />
     </div>
 </template>
@@ -119,9 +120,7 @@ let saveId = 0
 
 watch(project, requestSave, {deep: true})
 
-const properties = computed(() => {
-    return [] // TODO
-})
+const properties = ref<string[]>([])
 
 function unselect() {
     selectPolyline(-1)
@@ -133,6 +132,10 @@ function selectPolyline(index: number) {
 
 function deleteSelectedPolyline() {
     mapViewRef.value?.deleteSelectedPolyline()
+}
+
+function setProperties(p: string[]) {
+    properties.value = p
 }
 
 function handleKeyboardEvent(e: KeyboardEvent) {
