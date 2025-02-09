@@ -233,6 +233,9 @@ onMounted(() => {
 }
 .polyline-list {
     flex-grow: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(1, 1, 1, 0.2) transparent;
 }
 .list-item {
     padding: 0.5rem 0.75rem;
