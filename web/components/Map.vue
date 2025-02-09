@@ -31,11 +31,15 @@
                 <template v-for="(c, index) in project.curves">
                     <div :class="listItemClass(index)" @click.stop="selectPolyline(index)">
                         <div>{{ `${c.name} (${c.controlPoints.length} points)` }}</div>
-                        <div v-if="index == selectedCurveIndex">
-                            <button @click.stop="toggleClosed(index)">
+                        <div v-if="index == selectedCurveIndex" class="d-flex gap-1">
+                            <button class="btn btn-light btn-sm"
+                                @click.stop="toggleClosed(index)"
+                            >
                                 {{ (c.closed) ? "Open" : "Close" }}
                             </button>
-                            <button @click.stop="deleteSelectedPolyline">Delete</button>
+                            <button class="btn btn-danger btn-sm"
+                                @click.stop="deleteSelectedPolyline"
+                            ><Ico name="fa6-solid:trash"/></button>
                         </div>
                     </div>
                 </template>
@@ -46,7 +50,7 @@
                     <div v-for="text in properties">{{ text }}</div>
                 </div>
                 <h2 class="mt-3">Legend</h2>
-                <select
+                <select class="form-select"
                     @change="setColormap" @click.stop
                     :value="project.settings.selectedColorMapIndex"
                 >
@@ -54,7 +58,7 @@
                         {{ c.name }}
                     </option>
                 </select>
-                <div class="legend">
+                <div class="legend mt-2">
                     <div v-for="item in selectedColorMap.items" class="legend-item">
                         <div class="legend-color" :style="`background-color: ${item.color}`"></div>
                         <div>{{ item.label }}</div>
@@ -228,7 +232,7 @@ onMounted(() => {
     margin-bottom: 0.25rem;
     display: flex;
     justify-content: space-between;
-    height: 22px;
+    align-items: baseline;
 }
 .list-item:hover {
     background-color: #e3e3e3;
