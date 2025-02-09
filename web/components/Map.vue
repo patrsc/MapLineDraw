@@ -6,7 +6,7 @@
     >
         <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
-                <h2>MapLineDraw</h2>
+                <h4>MapLineDraw</h4>
                 <p class="text-muted small">
                     Sketch corridors of railway lines or roads on an interactive map.
                     <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
@@ -27,7 +27,7 @@
                         class="btn btn-primary" @click.stop="toggleDrawMode"
                     >{{ btnDrawText }}</button>
                 </div>
-                <h2 class="mt-3">Curves</h2>
+                <h4 class="mt-3">Curves</h4>
             </div>
             <div class="polyline-list">
                 <div v-if="project.curves.length == 0" class="no-lines-placeholder">
@@ -51,10 +51,10 @@
             </div>
             <div class="sidebar-text">
                 <div class="curve-props" v-if="isCurveSelected">
-                    <h2 style="width: 100%">Properties</h2>
+                    <h4 style="width: 100%">Properties</h4>
                     <div v-for="text in properties">{{ text }}</div>
                 </div>
-                <h2 class="mt-3">Legend</h2>
+                <h4 class="mt-3">Legend</h4>
                 <select class="form-select"
                     @change="setColormap" @click.stop
                     :value="project.settings.selectedColorMapIndex"
@@ -105,7 +105,7 @@ const btnDrawText = computed(() => {
         if (!isCurveSelected.value) {
             return "Draw new curve"
         } else {
-            return "Add points"
+            return "Add points to curve"
         }
     }
 })
