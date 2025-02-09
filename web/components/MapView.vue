@@ -240,6 +240,7 @@ function getPreparedColorMap(): PreparedColorMap {
 }
 
 function update() {
+    if (curvesCache.length == 0) return
     const cm = getPreparedColorMap()
     for (let i = 0; i < curves.value.length; i++) {
         updateCurve(i, cm)
