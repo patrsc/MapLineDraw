@@ -121,7 +121,7 @@
 <script setup lang="ts">
 
 import type { Project } from "~/types"
-import { colorMaps } from "~/utils/themes"
+import { getColorMaps } from "~/utils/themes"
 
 const selectedCurveIndex = ref(-1)
 const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
@@ -145,26 +145,30 @@ const btnDrawText = computed(() => {
     }
 })
 
-const project = ref<Project>({
-    info: {
-        name: "",
-        description: "",
-        author: "",
-    },
-    curves: [],
-    colorMaps: colorMaps,
-    settings: {
-        selectedColorMapIndex: 0,
-        map: {
-            center: {
-                lat: 51.505,
-                lon: -0.09,
-            },
-            zoom: 13,
-            background: "osm",
+function getDefaultProject() {
+    return {
+        info: {
+            name: "",
+            description: "",
+            author: "",
         },
+        curves: [],
+        colorMaps: getColorMaps(),
+        settings: {
+            selectedColorMapIndex: 0,
+            map: {
+                center: {
+                    lat: 51.505,
+                    lon: -0.09,
+                },
+                zoom: 13,
+                background: "osm",
+            },
+        }
     }
-})
+}
+
+const project = ref<Project>(getDefaultProject())
 
 let saveIdRequest = 0
 let saveId = 0

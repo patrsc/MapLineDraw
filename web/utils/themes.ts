@@ -24,13 +24,15 @@ function toObject(item: ColorMapDefItem): ColorMapItem {
     return {limit: item[0], color: item[1], label: item[2]}
 }
 
-export const colorMaps: ColorMap[] = [
-    {
-        name: "High-speed train",
-        items: highspeedTrain.map(toObject),
-    },
-    {
-        name: "Low-speed train1",
-        items: lowspeedTrain.map(toObject),
-    }
-]
+export function getColorMaps(): ColorMap[] {
+    return [
+        {
+            name: "High-speed train",
+            items: highspeedTrain.map(toObject),
+        },
+        {
+            name: "Low-speed train",
+            items: lowspeedTrain.map(toObject),
+        }
+    ]
+}
