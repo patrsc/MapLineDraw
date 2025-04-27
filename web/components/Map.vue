@@ -118,13 +118,24 @@
     </div>
     <Modal id="confirmOpenModal" v-model="openProjectModalOpen">
         Opening a file will reset the current project. 
-        <Alert type="danger">All unsaved changes will be lost.</Alert>
+        <Alert type="danger">All unsaved changes in this project will be lost.</Alert>
         <template v-slot:title>
             Open file
         </template>
         <template v-slot:footer>
             <button type="button" class="btn btn-danger"
             @click="doOpenFile">Reset and open project</button>
+        </template>
+    </Modal>
+    <Modal id="confirmResetModal" v-model="resetProjectModalOpen">
+        This will clear this project and create a new empty project.
+        <Alert type="danger">All unsaved changes in this project will be lost.</Alert>
+        <template v-slot:title>
+            Reset project
+        </template>
+        <template v-slot:footer>
+            <button type="button" class="btn btn-danger"
+            @click="doReset">Reset project</button>
         </template>
     </Modal>
 </template>
@@ -423,7 +434,12 @@ function publishProject() {
 }
 
 function resetProject() {
-    console.log('reset project')
+    resetProjectModalOpen.value = true
+}
+
+function doReset() {
+    resetProjectModalOpen.value = false
+    project.value = getDefaultProject()
 }
 
 function downloadFile(filename: string, content: string) {

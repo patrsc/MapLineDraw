@@ -24,11 +24,6 @@ Change directory (`cd web`) and continue with [web/README.md](web/README.md).
 
 ## TODO
 
-Features:
-* load from JSON file, discarding current project
-* reset project: Reset project
-  * This will clear the project content and create a new empty project. All unsaved changes will be lost.
-  * `Cancel`, `Reset project`
 * host online
 
 ## Later
