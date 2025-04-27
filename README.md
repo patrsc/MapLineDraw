@@ -33,9 +33,8 @@ Features:
   * drag point selects it
   * add intermediate point selects it
   * default selected point: last point
-* implement curve name (shows in curve)
 * implement project info: name, description, author
-* Navbar: (sidebar-toggle) MapLineDraw.com | Open project | Save project | Publish project
+* Navbar: (sidebar-toggle) MapLineDraw.com | Open project | Save project | Publish project | Reset
 * main tabs:
   * Project: name+author, description, curve list, curve+point Properties, Legend
   * Colors: select colormap and map background tiles
@@ -44,8 +43,9 @@ Features:
   * save immutable copy on server, link = hash of JSON file (concise JSON)
   * deleted after 1 year
   * re-publish resets timer
-  * Import this project (discards current project) | Re-publish | Download | Copy link | Back to your project
-  * project can only be accessed by link
+  * Open this project (discards current project) | Re-publish | Download | Copy link | Back to your project
+  * project can only be accessed by link: `maplinedraw.com/public/{id}`
+  * max file size?
 * transfer curve computation to JavaScript
 * host online
 

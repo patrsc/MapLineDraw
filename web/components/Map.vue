@@ -29,7 +29,7 @@
                         class="btn btn-primary" @click.stop="toggleDrawMode"
                     >{{ btnDrawText }}</button>
                 </div>
-                <h4 class="mt-3">Curves</h4>
+                <h5 class="mt-3">Curves</h5>
             </div>
             <div class="polyline-list">
                 <div v-if="project.curves.length == 0" class="no-lines-placeholder">
@@ -52,11 +52,13 @@
                 </template>
             </div>
             <div class="sidebar-text">
-                <div class="curve-props" v-if="isCurveSelected">
-                    <h4 style="width: 100%">Properties</h4>
-                    <div v-for="text in properties">{{ text }}</div>
+                <div class="curve-props" v-if="isCurveSelected" @click.stop="noUnselect">
+                    <h5 style="width: 100%">Curve properties</h5>
+                    <input type="text" v-model="project.curves[selectedCurveIndex].name"
+                        class="form-control mb-1" @keyup.stop placeholder="Curve name">
+                    <div v-for="text in properties" class="px-1 small">{{ text }}</div>
                 </div>
-                <h4 class="mt-3">Legend</h4>
+                <h5 class="mt-3">Legend</h5>
                 <select class="form-select"
                     @change="setColormap" @click.stop
                     :value="project.settings.selectedColorMapIndex"
@@ -142,6 +144,10 @@ const properties = ref<string[]>([])
 
 function unselect() {
     selectPolyline(-1)
+}
+
+function noUnselect() {
+    // nothing to do
 }
 
 function selectPolyline(index: number) {
