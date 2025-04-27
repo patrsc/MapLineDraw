@@ -78,6 +78,10 @@ let updating = false
 let curvesCache: CurveCache = []
 
 function initCache() {
+    // remove existing layers (which becomes garbage)
+    for (let i = 0; i < curvesCache.length; i++) {
+        deleteItems(i)
+    }
     curvesCache = curves.value.map((c) => {
         return {
             points: c.controlPoints.map((pt, i) => newPoint(pt.lat, pt.lon, i)),
@@ -243,7 +247,7 @@ function getPreparedColorMap(): PreparedColorMap {
 }
 
 function update() {
-    if (curvesCache.length == 0) return
+    if (curvesCache.length != curves.value.length) return
     const cm = getPreparedColorMap()
     for (let i = 0; i < curves.value.length; i++) {
         updateCurve(i, cm)
