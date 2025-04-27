@@ -4,7 +4,7 @@
         @keyup.delete="deleteSelectedPolyline"
         @keyup="handleKeyboardEvent"
     >
-        <Navbar />
+        <Navbar @button-click="handleNavbarButtonClick"/>
         <div class="map-main">
         <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
@@ -270,6 +270,64 @@ function loadLocalStorage() {
     if (s != null) {
         project.value = JSON.parse(s)
     }
+}
+
+function handleNavbarButtonClick(button: "open" | "save" | "publish" | "reset") {
+    const functions = {
+        "open": openProjectFile,
+        "save": saveProjectFile,
+        "publish": publishProject,
+        "reset": resetProject,
+    }
+    functions[button]()
+}
+
+function openProjectFile() {
+    console.log('open project')
+}
+
+async function saveProjectFile() {
+    const hash = await hashProject()
+    const pretty = JSON.stringify(project.value, null, 4)
+    const filename = projectNameDisplay.value + ".json"
+    downloadFile(filename, pretty)
+    localStorage.setItem("saved-project-hash", hash)
+}
+
+async function hashProject(): Promise<string> {
+    return await sha256(encodeUtf8(JSON.stringify(project.value)))
+}
+
+function encodeUtf8(s: string): Uint8Array {
+    const encoder = new TextEncoder() // UTF-8
+    return encoder.encode(s)
+}
+
+async function sha256(uint8Array: Uint8Array): Promise<string> {
+    const hashBuffer = await crypto.subtle.digest('SHA-256', uint8Array);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function publishProject() {
+    console.log('publish project')
+}
+
+function resetProject() {
+    console.log('reset project')
+}
+
+function downloadFile(filename: string, content: string) {
+    const uint8Array = encodeUtf8(content)
+    const blob = new Blob([uint8Array], { type: "text/plain" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
 }
 
 // Main

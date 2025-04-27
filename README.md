@@ -25,7 +25,6 @@ Change directory (`cd web`) and continue with [web/README.md](web/README.md).
 ## TODO
 
 Features:
-* save to JSON file (pretty print)
 * load from JSON file, discarding current project
   * if curves or project info is not empty or last saved hash != current hash
   * Modal: Open file
