@@ -22,15 +22,16 @@
                         </span>
                     </template>
                     <span v-else>
-                        Click on different map positions to draw. Press <kbd>d</kbd> to finish.
+                        Click on different map positions to draw curve by adding points.<br>
+                        Press <kbd>d</kbd> to finish or click Finish.
                     </span>
                 </p>
-                <div class="d-grid gap-2">
-                    <button
-                        class="btn btn-primary" @click.stop="toggleDrawMode"
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="mt-2">Curves</h5>
+                    <button class="btn btn-sm btn-primary"
+                    @click.stop="toggleDrawMode"
                     >{{ btnDrawText }}</button>
                 </div>
-                <h5 class="mt-3">Curves</h5>
             </div>
             <div class="polyline-list">
                 <div v-if="project.curves.length == 0" class="no-lines-placeholder">
@@ -106,12 +107,12 @@ const mapViewRef = useTemplateRef("mapViewRef")
 
 const btnDrawText = computed(() => {
     if (drawMode.value) {
-        return "Finish drawing"
+        return "Finish"
     } else {
         if (!isCurveSelected.value) {
-            return "Draw new curve"
+            return "Draw new"
         } else {
-            return "Add points to curve"
+            return "Add points"
         }
     }
 })

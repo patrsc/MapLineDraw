@@ -1,5 +1,8 @@
 <template>
     <div id="map" class="map-element" ref="map-element"></div>
+    <div class="map-overlay-top-right">
+        <!--<button class="btn btn-primary shadow">Draw new curve</button>-->
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -526,6 +529,13 @@ onMounted(() => {
 <style>
 .map-element {
     flex: 1;
+    position: relative;
+}
+.map-overlay-top-right {
+    position: fixed;
+    right: 1rem;
+    top: 4.5rem;
+    z-index: 1000;
 }
 
 .control-point {
