@@ -18,9 +18,11 @@
                 <button class="btn btn-success" type="button" @click="emit('button-click', 'save')">
                     <Ico name="fa6-solid:download" class="me-2"/>Save
                 </button>
+                <!--
                 <button class="btn btn-light" type="button" @click="emit('button-click', 'publish')">
                     <Ico name="fa6-solid:arrow-up-from-bracket" class="me-2"/>Publish
                 </button>
+                -->
                 <button class="btn btn-danger" type="button" @click="emit('button-click', 'reset')">
                     <Ico name="fa6-solid:trash" class="me-2"/>Reset
                 </button>
