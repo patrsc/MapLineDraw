@@ -116,6 +116,17 @@
         />
     </div>
     </div>
+    <Modal id="confirmOpenModal" v-model="openProjectModalOpen">
+        Opening a file will reset the current project. 
+        <Alert type="danger">All unsaved changes will be lost.</Alert>
+        <template v-slot:title>
+            Open file
+        </template>
+        <template v-slot:footer>
+            <button type="button" class="btn btn-danger"
+            @click="doOpenFile">Reset and open project</button>
+        </template>
+    </Modal>
 </template>
 
 <script setup lang="ts">
@@ -172,6 +183,8 @@ const project = ref<Project>(getDefaultProject())
 
 let saveIdRequest = 0
 let saveId = 0
+let openProjectModalOpen = ref(false)
+let resetProjectModalOpen = ref(false)
 
 watch(project, requestSave, {deep: true})
 
@@ -286,10 +299,6 @@ function handleNavbarButtonClick(button: "open" | "save" | "publish" | "reset") 
     functions[button]()
 }
 
-function openProjectFile() {
-    console.log('open project')
-}
-
 async function saveProjectFile() {
     const hash = await hashProject()
     const pretty = JSON.stringify(project.value, null, 4)
@@ -311,6 +320,49 @@ async function sha256(uint8Array: Uint8Array): Promise<string> {
     const hashBuffer = await crypto.subtle.digest('SHA-256', uint8Array);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hasUnsavedChanges() {
+    if (isEmpytProject()) {
+        return false
+    }
+    const h = await hashProject()
+    const hSaved = localStorage.getItem("saved-project-hash")
+    if (h == hSaved) {
+        return false
+    }
+    return true
+}
+
+function isEmpytProject() {
+    const p: any = { ...project.value }
+    const defaultProject: any = getDefaultProject()
+    const excludeKeys = ["settings"]
+    for (const key of excludeKeys) {
+        delete p[key]
+        delete defaultProject[key]
+    }
+    if (JSON.stringify(p) == JSON.stringify(defaultProject)) {
+        return true
+    }
+    return false
+}
+
+async function openProjectFile() {
+    if (await hasUnsavedChanges()) {
+        openProjectModalOpen.value = true
+    } else {
+        loadProject()
+    }
+}
+
+function doOpenFile() {
+    openProjectModalOpen.value = false
+    loadProject()
+}
+
+function loadProject() {
+    console.log('load project')
 }
 
 function publishProject() {

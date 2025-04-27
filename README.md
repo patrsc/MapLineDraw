@@ -26,10 +26,6 @@ Change directory (`cd web`) and continue with [web/README.md](web/README.md).
 
 Features:
 * load from JSON file, discarding current project
-  * if curves or project info is not empty or last saved hash != current hash
-  * Modal: Open file
-  * Opening a file will reset the current project. All unsaved changes will be lost.
-  * `Cancel`, `Reset and open project`
 * reset project: Reset project
   * This will clear the project content and create a new empty project. All unsaved changes will be lost.
   * `Cancel`, `Reset project`
