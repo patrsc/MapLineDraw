@@ -26,6 +26,34 @@
                         Press <kbd>d</kbd> to finish or click Finish.
                     </span>
                 </p>
+                <template v-if="projectEditMode">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="mt-2">Project</h5>
+                        <button type="button" class="btn btn-sm btn-success"
+                        @click="toggleProjectEditMode">Done</button>
+                    </div>
+                    <form submit.prevent>
+                        <input type="text" v-model="project.info.name"
+                            class="form-control mb-1" @keyup.stop placeholder="Name">
+                        <input type="text" v-model="project.info.author"
+                            class="form-control mb-1" @keyup.stop placeholder="Author">
+                        <textarea type="text" v-model="project.info.description" rows="3"
+                            class="form-control mb-1" @keyup.stop placeholder="Description">
+                        </textarea>
+                    </form>
+                </template>
+                <template v-else>
+                    <div class="d-flex align-items-baseline justify-content-between">
+                        <div class="mt-2 mb-2">
+                            <h5 style="display: inline;">{{ projectNameDisplay }}</h5>
+                            <span class="author text-muted small">{{ authorDisplay }}</span>
+                        </div>
+                        <a href="#" class="small" @click="toggleProjectEditMode">Edit</a>
+                    </div>
+                    <p v-if="descriptionDisplay" class="description text-muted small">
+                        {{ descriptionDisplay }}
+                    </p>
+                </template>
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="mt-2">Curves</h5>
                     <button class="btn btn-sm btn-primary"
@@ -39,7 +67,7 @@
                 </div>
                 <template v-for="(c, index) in project.curves">
                     <div :class="listItemClass(index)" @click.stop="selectPolyline(index)">
-                        <div>{{ `${c.name} (${c.controlPoints.length} points)` }}</div>
+                        <div class="curve-name">{{ `${c.name} (${c.controlPoints.length} points)` }}</div>
                         <div v-if="index == selectedCurveIndex" class="d-flex gap-1">
                             <button class="btn btn-light btn-sm"
                                 @click.stop="toggleClosed(index)"
@@ -119,7 +147,7 @@ const btnDrawText = computed(() => {
 
 const project = ref<Project>({
     info: {
-        name: "Project",
+        name: "",
         description: "",
         author: "",
     },
@@ -144,6 +172,36 @@ let saveId = 0
 watch(project, requestSave, {deep: true})
 
 const properties = ref<string[]>([])
+
+const projectEditMode = ref<boolean>(false)
+
+const projectNameDisplay = computed(() => {
+    if (project.value.info.name) {
+        return project.value.info.name
+    } else {
+        return "Project"
+    }
+})
+
+const authorDisplay = computed(() => {
+    if (project.value.info.author) {
+        return " by " + project.value.info.author
+    } else {
+        return ""
+    }
+})
+
+const descriptionDisplay = computed(() => {
+    if (project.value.info.description) {
+        return project.value.info.description
+    } else {
+        return "No description."
+    }
+})
+
+function toggleProjectEditMode() {
+    projectEditMode.value = !projectEditMode.value
+}
 
 function unselect() {
     selectPolyline(-1)
@@ -308,6 +366,19 @@ onMounted(() => {
 
 .help-text {
     height: 63px;
+}
+
+.curve-name {
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+
+.description {
+    max-height: 4rem;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(1, 1, 1, 0.2) transparent;
 }
 
 </style>

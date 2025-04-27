@@ -8,6 +8,12 @@ a:hover {
 .btn:hover, .page-link:hover, .nav-link:hover, .dropdown-item:hover, .navbar-brand:hover {
     text-decoration: none;
 }
+button.btn-link {
+    text-decoration: none;
+}
+button.btn-link:hover {
+    text-decoration: underline;
+}
 .font-mono {
     font-family: var(--bs-font-monospace);
 }
