@@ -352,7 +352,7 @@ async function openProjectFile() {
     if (await hasUnsavedChanges()) {
         openProjectModalOpen.value = true
     } else {
-        loadProject()
+        await loadProject()
     }
 }
 
@@ -361,8 +361,63 @@ function doOpenFile() {
     loadProject()
 }
 
-function loadProject() {
+async function loadProject() {
     console.log('load project')
+    const file = await openJsonFileDialog()
+    if (!file) {
+        return
+    }
+    try {
+        const content = await readFileAsString(file)
+        const p = JSON.parse(content)
+        //project.value.curves = []
+        project.value = p
+    } catch (error) {
+        alert("Could not load the file.")
+    }
+}
+
+function readFileAsString(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      resolve(reader.result as string)
+    }
+
+    reader.onerror = () => {
+      reject('Error reading file')
+    }
+
+    reader.readAsText(file, 'utf-8')
+  })
+}
+
+async function openJsonFileDialog() {
+    return await openFileDialog(".json")
+}
+
+function openFileDialog(filetypes: string): Promise<File | null> {
+    return new Promise((resolve) => {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = filetypes
+        input.style.display = 'none'
+
+        input.addEventListener('change', () => {
+            const file = input.files ? input.files[0] : null
+            document.body.removeChild(input)
+            resolve(file)
+        })
+
+        input.addEventListener('cancel', () => {
+            document.body.removeChild(input)
+            resolve(null)
+        })
+
+        document.body.appendChild(input)
+        input.click()
+    })
 }
 
 function publishProject() {
