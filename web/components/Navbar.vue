@@ -1,0 +1,34 @@
+<template>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <Ico name="fa6-regular:map" class="me-1"/>
+                MapLineDraw
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            </ul>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" type="button">
+                    <Ico name="fa6-regular:folder" class="me-2"/>Open
+                </button>
+                <button class="btn btn-success" type="button">
+                    <Ico name="fa6-solid:download" class="me-2"/>Save
+                </button>
+                <button class="btn btn-light" type="button">
+                    <Ico name="fa6-solid:arrow-up-from-bracket" class="me-2"/>Publish
+                </button>
+                <button class="btn btn-danger" type="button">
+                    <Ico name="fa6-solid:trash" class="me-2"/>Reset
+                </button>
+            </div>
+            </div>
+        </div>
+    </nav>
+</template>
+
+<style scoped>
+</style>

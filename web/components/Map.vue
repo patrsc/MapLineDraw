@@ -4,9 +4,10 @@
         @keyup.delete="deleteSelectedPolyline"
         @keyup="handleKeyboardEvent"
     >
+        <Navbar />
+        <div class="map-main">
         <div class="sidebar" @click="unselect">
             <div class="sidebar-text">
-                <h4>MapLineDraw</h4>
                 <p class="text-muted small mt-2 mb-2 help-text">
                     <template v-if="!drawMode">
                         <span v-if="isCurveSelected">
@@ -84,6 +85,7 @@
             v-model:draw-mode="drawMode"
             @select-curve="setProperties"
         />
+    </div>
     </div>
 </template>
 
@@ -223,12 +225,18 @@ onMounted(() => {
 .map-app {
     display: flex;
     height: 100vh;
+    flex-direction: column;
+}
+.map-main {
+    display: flex;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .sidebar {
     width: 300px;
     background-color: #f4f4f4;
-    padding: 0px 10px;
+    padding: 0px 0.25rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -242,6 +250,7 @@ onMounted(() => {
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(1, 1, 1, 0.2) transparent;
+    padding: 0rem 0.5rem;
 }
 .list-item {
     padding: 0.5rem 0.75rem;
