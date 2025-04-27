@@ -18,6 +18,10 @@ Run API:
 poetry run fastapi dev api.py
 ```
 
+## Run web site
+
+Change directory (`cd web`) and continue with [web/README.md](web/README.md).
+
 ## TODO
 
 Features:
