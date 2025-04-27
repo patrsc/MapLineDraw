@@ -362,7 +362,6 @@ function doOpenFile() {
 }
 
 async function loadProject() {
-    console.log('load project')
     const file = await openJsonFileDialog()
     if (!file) {
         return
@@ -370,7 +369,6 @@ async function loadProject() {
     try {
         const content = await readFileAsString(file)
         const p = JSON.parse(content)
-        //project.value.curves = []
         project.value = p
     } catch (error) {
         alert("Could not load the file.")
