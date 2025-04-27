@@ -27,30 +27,35 @@ Change directory (`cd web`) and continue with [web/README.md](web/README.md).
 Features:
 * save to JSON file (pretty print)
 * load from JSON file, discarding current project
-* normal mode:
-  * click on point selects point
-  * point: show lat, lon and "Delete point" button (key Backspace)
-  * drag point selects it
-  * add intermediate point selects it
-  * default selected point: last point
-* implement project info: name, description, author
-* Navbar: (sidebar-toggle) MapLineDraw.com | Open project | Save project | Publish project | Reset
-* main tabs:
-  * Project: name+author, description, curve list, curve+point Properties, Legend
-  * Colors: select colormap and map background tiles
-  * Help: help texts
+  * if curves or project info is not empty or last saved hash != current hash
+  * Modal: Open file
+  * Opening a file will reset the current project. All unsaved changes will be lost.
+  * `Cancel`, `Reset and open project`
+* reset project: Reset project
+  * This will clear the project content and create a new empty project. All unsaved changes will be lost.
+  * `Cancel`, `Reset project`
+* host online
+
+## Later
+
 * publish:
   * save immutable copy on server, link = hash of JSON file (concise JSON)
   * deleted after 1 year
   * re-publish resets timer
   * Open this project (discards current project) | Re-publish | Download | Copy link | Back to your project
-  * project can only be accessed by link: `maplinedraw.com/public/{id}`
+  * project can only be accessed by link: `maplinedraw.com/public/{id}`, read-only
   * max file size?
 * transfer curve computation to JavaScript
-* host online
-
-## Later
-
+* implement normal mode:
+  * click on point selects point
+  * point: show lat, lon and "Delete point" button (key Backspace)
+  * drag point selects it
+  * add intermediate point selects it
+  * default selected point: last point
+* main tabs:
+  * Project: name+author, description, curve list, curve+point Properties, Legend
+  * Colors: select colormap and map background tiles
+  * Help: help texts
 * curvature plot preview over distance with point "sync"
 * split curve at selected point
 * join curves: select endpoint of one curve, click merge, select endpoint of another curve
