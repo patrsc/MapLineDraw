@@ -1,0 +1,13 @@
+services:
+  api:
+    build: ./api
+    image: maplinedraw_api
+    restart: always
+    networks:
+      - backend
+    environment:
+      - API_ROOT_PATH=/api
+      - API_ALLOWED_ORIGIN="https://maplinedraw.com"
+
+networks:
+  backend:

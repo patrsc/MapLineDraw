@@ -1,4 +1,5 @@
 """REST API for computing B-spline curves."""
+import os
 from typing import Annotated
 from annotated_types import Len
 from fastapi import FastAPI
@@ -10,10 +11,13 @@ from globe import GlobePoint, Point
 from spline import BSpline
 from geo import arclen, curvature, speed
 
-app = FastAPI(title="Curve API")
+API_ROOT_PATH = os.environ.get("API_ROOT_PATH", "/")
+API_ALLOWED_ORIGIN = os.environ.get("API_ALLOWED_ORIGIN", "http://localhost:3000")
+
+app = FastAPI(title="Curve API", root_path=API_ROOT_PATH)
 
 origins = [
-    "http://localhost:3000",
+    API_ALLOWED_ORIGIN,
 ]
 
 app.add_middleware(
