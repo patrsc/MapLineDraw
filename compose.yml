@@ -8,6 +8,13 @@ services:
     environment:
       - API_ROOT_PATH=/api
       - API_ALLOWED_ORIGIN="https://maplinedraw.com"
+  web:
+    build: ./web
+    image: maplinedraw_web
+    restart: always
+    networks:
+      - backend
 
 networks:
   backend:
+  frontend:
