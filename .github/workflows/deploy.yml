@@ -21,6 +21,6 @@ jobs:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Deploy Web
-        run: ssh user@maplinedraw.com "bash web/scripts/deploy.sh"
+        run: ssh user@maplinedraw.com "bash maplinedraw/scripts/deploy.sh"
       - name: Cleanup
         run: rm -rf ~/.ssh
