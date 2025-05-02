@@ -22,9 +22,9 @@ poetry run fastapi dev api.py
 
 Change directory (`cd web`) and continue with [web/README.md](web/README.md).
 
-## TODO
+## Deploy
 
-* host online
+See [Deployment Guide](deploy.md) how to deploy to [maplinedraw.com](https://maplinedraw.com).
 
 ## Later
 

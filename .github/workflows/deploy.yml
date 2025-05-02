@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://maplinedraw.com
+    steps:
+      - name: Setup SSH
+        uses: benoitchantre/setup-ssh-authentication-action@1.0.1
+        with:
+          private-key-name: id_ed25519
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+      - name: Deploy Web
+        run: ssh user@maplinedraw.com "bash web/scripts/deploy.sh"
+      - name: Cleanup
+        run: rm -rf ~/.ssh
