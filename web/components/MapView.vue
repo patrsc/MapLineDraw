@@ -504,7 +504,10 @@ async function loadSpline(p: Curve): Promise<null | SplineData> {
         closed: p.closed,
         max_distance: 30,
     }
-    const url = "http://localhost:8000/curve"
+    let url = "https://maplinedraw.com/api/curve"
+    if (import.meta.dev) {
+        url = "http://localhost:8000/curve"
+    }
     const options = {
         method: "POST",
         body: JSON.stringify(data),
