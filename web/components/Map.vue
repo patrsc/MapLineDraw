@@ -6,7 +6,7 @@
     >
         <Navbar @button-click="handleNavbarButtonClick"/>
         <div class="map-main">
-        <div class="sidebar" @click="unselect">
+        <div class="sidebar" @click="unselect" :data-visible="sidebarVisible">
             <div class="sidebar-text">
                 <p class="text-muted small mt-2 mb-2 help-text">
                     <template v-if="!drawMode">
@@ -156,6 +156,7 @@ const selectedColorMap = computed(() => {
 
 let readOnly = ref(false)
 let drawMode = ref(false)
+let sidebarVisible = ref(true)
 
 const mapViewRef = useTemplateRef("mapViewRef")
 
@@ -235,6 +236,11 @@ function toggleProjectEditMode() {
     projectEditMode.value = !projectEditMode.value
 }
 
+function toggleSidebar() {
+    sidebarVisible.value = !sidebarVisible.value
+    nextTick(() => mapViewRef.value?.invalidateSize())
+}
+
 function unselect() {
     selectPolyline(-1)
 }
@@ -311,6 +317,7 @@ function handleNavbarButtonClick(button: "open" | "save" | "publish" | "reset") 
         "save": saveProjectFile,
         "publish": publishProject,
         "reset": resetProject,
+        "toggle-sidebar": toggleSidebar,
     }
     functions[button]()
 }
@@ -487,6 +494,9 @@ onMounted(() => {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+}
+.sidebar[data-visible="false"] {
+    display: none;
 }
 
 .sidebar-text {

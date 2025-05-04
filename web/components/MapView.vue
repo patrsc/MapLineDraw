@@ -42,6 +42,7 @@ const emit = defineEmits(["select-curve"])
 defineExpose({
     deleteSelectedPolyline,
     toggleClosed,
+    invalidateSize,
 })
 
 const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
@@ -138,6 +139,10 @@ function initializeMap() {
     map.on('click', addControlPoint)
     map.on('zoomend', updateMapView)
     map.on('moveend', updateMapView)
+}
+
+function invalidateSize() {
+    map.invalidateSize()
 }
 
 function getMapView(): [[number, number], number] {

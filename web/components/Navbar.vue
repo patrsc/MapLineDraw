@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="#" @click="emit('button-click', 'toggle-sidebar')">
                 <Ico name="fa6-regular:map" class="me-1"/>
                 MapLineDraw
             </a>
