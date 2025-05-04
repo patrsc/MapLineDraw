@@ -623,12 +623,6 @@ function doReset() {
 
 function doPublish() {
     let error = true
-    // Errors:
-    // File cannot be accessed. Make sure it is publicly accessible and a direct download link.
-    // Files larger than 1 MB are not supported. Use a smaller project file.
-    // The file content is not valid JSON.
-    // The file does not respect the JSON schema of MapLineDraw.
-    // The URL you provided is too long. At most 250 characters are supported.
     if (error) {
         publishErrorText.value = "Not implemented yet."
     } else {

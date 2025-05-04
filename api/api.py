@@ -7,16 +7,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator, ConfigDict, StringConstraints
 from pydantic_string_url import HttpUrl
 import numpy as np
+from fastapi_simple_errors import (
+    NotFoundError,
+    BadRequestError,
+    error_responses_from_status_codes as err,
+)
 
 from globe import GlobePoint, Point
 from spline import BSpline
 from geo import arclen, curvature, speed
+from util import generate_id
 
 API_ROOT_PATH = os.environ.get("API_ROOT_PATH", "/")
 API_ALLOWED_ORIGIN = os.environ.get("API_ALLOWED_ORIGIN", "http://localhost:3000")
 
 MAX_FILE_SIZE = 1 * 1024 * 1024
-MAX_FILE_URL_LENGTH = 250
+MAX_URL_LENGTH = 250
 
 app = FastAPI(title="MapLineDraw API", root_path=API_ROOT_PATH)
 
@@ -149,7 +155,7 @@ class Project(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
 
-@app.post("/curve", response_model=CurveOutput)
+@app.post("/curve")
 def compute_curve(data: CurveInput) -> CurveOutput:
     """Compute B-spline curve."""
     # pylint: disable=too-many-locals
@@ -183,41 +189,63 @@ def compute_curve(data: CurveInput) -> CurveOutput:
     )
 
 
-@app.post("/publish", response_model=PublishOutput)
+@app.post("/publish", responses=err(404, 400))
 def publish_project(data: PublishInput) -> PublishOutput:
     """Publish a project."""
+    # pylint: disable=redefined-builtin
     # Verify URL length limit or fail with 400
+    if len(data.url) > MAX_URL_LENGTH:
+        msg = f"The provided URL is too long. At most {MAX_URL_LENGTH} characters are supported."
+        raise BadRequestError(msg)
 
-    # Download file from URL or fail with 404 if source file cannot be accessed
+    download_and_parse(data.url)
 
-    # Verify file size limit or fail with 422
-
-    # Parse JSON or fail with 422
-
-    # Validate JSON schema or fail with 422
-
-    # Generate public URL
+    # Generate id
+    id = generate_id()
 
     # Store item including current date
 
     print(data)
+    res = PublishOutput(id=id)
     raise NotImplementedError()
 
 
-@app.get("/public/:id", response_model=Project)
+@app.get("/public/:id", responses=err(404, 400))
 def get_public_project(id: str) -> Project:
     """Get a published project as JSON."""
+    # pylint: disable=redefined-builtin
     # Get stored URL or fail with 404
+    not_found_message = "Project not found."
+    url = ""
+    if not url:
+        raise NotFoundError(not_found_message)
 
+    try:
+        project = download_and_parse(url)
+    except NotFoundError:
+        raise NotFoundError(not_found_message)  # overwrite message
+
+    return project
+
+
+def download_and_parse(url: HttpUrl) -> Project:
+    """Download from URL and parse JSON."""
     # Download file from URL or fail with 404 if source file cannot be accessed
+    msg = "File cannot be accessed. Make sure it is publicly accessible and a direct download link."
+    raise NotFoundError(msg)
 
     # Verify file size limit or fail with 422
+    msg = (
+        f"Files larger than {MAX_FILE_SIZE/1024**2} MB are not supported. "
+        "Use a smaller project file."
+    )
+    raise BadRequestError(msg)
 
     # Parse JSON or fail with 422
+    raise BadRequestError("The file content is not valid JSON.")
 
     # Validate JSON schema or fail with 422
+    raise BadRequestError("The file does not respect the JSON schema of MapLineDraw.")
 
-    # Return project
-
-    print(id)
-    raise NotImplementedError()
+    print(url)
+    return project

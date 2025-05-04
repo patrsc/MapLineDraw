@@ -237,6 +237,20 @@ uvicorn = {version = ">=0.15.0", extras = ["standard"]}
 standard = ["uvicorn[standard] (>=0.15.0)"]
 
 [[package]]
+name = "fastapi-simple-errors"
+version = "1.0.0"
+description = "Simple error handling for fastapi using custom error classes."
+optional = false
+python-versions = "<4.0.0,>=3.8.1"
+files = [
+    {file = "fastapi_simple_errors-1.0.0-py3-none-any.whl", hash = "sha256:23371d9c21fa31897254845ab32196f1ff229df5a790748ff23c40b2692e8516"},
+    {file = "fastapi_simple_errors-1.0.0.tar.gz", hash = "sha256:c14f6117d2fb68c62775ae0af060228f439e20148f4aec608f4cceaee0a5f8ee"},
+]
+
+[package.dependencies]
+fastapi = ">=0.115.0,<0.116.0"
+
+[[package]]
 name = "fonttools"
 version = "4.55.8"
 description = "Tools to manipulate font files"
@@ -1549,4 +1563,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "82b2bc4394aec4315f5222a9ed08b30d1a259e9f714133ce1b6d5db4b2bb3807"
+content-hash = "ebb6ce7989cc49460d00061410f22b77e4bf195557ae5ac2b49c57df878058cc"
