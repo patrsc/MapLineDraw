@@ -141,6 +141,105 @@
             @click="doReset">Delete project content</button>
         </template>
     </Modal>
+    <Modal id="publishModal" class="modal-lg" v-model="publishModalOpen">
+        Make this project accessible to others by following these steps:
+        <ol class="steps">
+            <li>Save your project file and upload it to a public place. You can
+                use the cloud storage provider of your choice to create a public link to the
+                file. You can also use your own web server to host the file.
+                <div class="mt-2">
+                    <button class="btn btn-success" type="button" @click="saveProjectFile">
+                        <Ico name="fa6-solid:download" class="me-2"/>Save project file
+                    </button>
+                </div>
+                <p class="mt-2 mb-2">View instructions for:</p>
+                <div class="d-flex gap-2">
+                    <button :class="instructionsButtonClass('dropbox')" type="button"
+                        @click="showInstructions('dropbox')">
+                        <Ico name="fa6-brands:dropbox" class="me-2"/>Dopbox
+                    </button>
+                    <button :class="instructionsButtonClass('google')" type="button"
+                        @click="showInstructions('google')">
+                        <Ico name="fa6-brands:google-drive" class="me-2"/>Google Drive
+                    </button>
+                    <button :class="instructionsButtonClass('onedrive')" type="button"
+                        @click="showInstructions('onedrive')">
+                        <Ico name="fa6-solid:cloud" class="me-2"/>OneDrive
+                    </button>
+                    <button :class="instructionsButtonClass('github')" type="button"
+                        @click="showInstructions('github')">
+                        <Ico name="fa6-brands:github" class="me-2"/>GitHub
+                    </button>
+                    <button :class="instructionsButtonClass('fileio')" type="button"
+                        @click="showInstructions('fileio')">
+                        <Ico name="fa6-solid:file" class="me-2"/>File.io
+                    </button>
+                </div>
+                <p v-if="publishInstructions == 'dropbox'" class="text-muted mt-3">
+                    <ol class="steps">
+                        <li>Copy the file to your <strong>Dropbox</strong> folder or upload it to
+                        <a href="https://www.dropbox.com/" target="_blank">dropbox.com</a></li>
+                        <li>Locate the file on
+                        <a href="https://www.dropbox.com/" target="_blank">dropbox.com</a>
+                        and click on the <strong><Ico name="fa6-solid:link"/> Copy link</strong> button
+                        </li>
+                        <li>Paste the link in the field below, but replace the part <code>dl=0</code> with <code>dl=1</code></li>
+                    </ol>
+                </p>
+                <p v-if="publishInstructions == 'google'" class="mt-3">
+                    google instructions
+                </p>
+                <p v-if="publishInstructions == 'onedrive'" class="mt-3">
+                    onedrive instructions
+                </p>
+                <p v-if="publishInstructions == 'github'" class="mt-3">
+                    github instructions
+                </p>
+                <p v-if="publishInstructions == 'fileio'" class="mt-3">
+                    fileio instructions
+                </p>
+            </li>
+            <li>Paste the public link:</li>
+            <input type="text" class="form-control mt-2" v-model="publicFileUrl"
+                placeholder="https://example.com/public/project.json">
+                <div class="form-text">
+                This will not be shared. If the source file is deleted, the public project will also be deleted.
+                </div>
+        </ol>
+        <template v-slot:title>
+            Publish project
+        </template>
+        <template v-slot:footer>
+            <button type="button" class="btn btn-primary"
+            @click="doPublish">Publish</button>
+        </template>
+    </Modal>
+    <Modal id="publisedhModal" v-model="publishedModalOpen" cancel-text="Close">
+        <Alert type="success" styles="margin-top: 0 !important;">Your project was published.</Alert>
+        <p>You can access the project with the following link:</p>
+        <div class="input-group mt-2">
+            <input type="text" class="form-control" disabled :value="publicUrl"
+                id="publicUrl">
+            <button class="btn btn-success" type="button" @click="copyUrl">
+                <Ico :name="copyIcon" class="me-2"/>{{ copyText }}
+            </button>
+        </div>
+        <p class="mt-3">You can
+            <ul>
+                <li>Change or replace the source file on your storage provider to update
+                    the published project.</li>
+                <li>Delete the source file on your storage provider to delete
+                    the published project.</li>
+            </ul>
+        </p>
+        <template v-slot:footer>
+            <NuxtLink class="btn btn-primary"
+            :to="publicUrl">Show published project</NuxtLink>
+        </template>
+        <template v-slot:title>
+            Project was published
+        </template>
+    </Modal>
 </template>
 
 <script setup lang="ts">
@@ -201,6 +300,48 @@ let saveIdRequest = 0
 let saveId = 0
 let openProjectModalOpen = ref(false)
 let resetProjectModalOpen = ref(false)
+let publishModalOpen = ref(false)
+let publishedModalOpen = ref(false)
+let publicFileUrl = ref("")
+let publishInstructions = ref("")
+let publicUrl = ref("https://maplinedraw.com/public/asdfasdfasdf")
+const copyText = ref("")
+const copyIcon = ref("")
+resetCopy()
+
+async function copyUrl() {
+    const input = document.getElementById("publicUrl") as HTMLInputElement | null
+    if (input) {
+        try {
+            input.select()
+            input.setSelectionRange(0, 99999)  // For mobile devices
+            await navigator.clipboard.writeText(input.value)
+            copyText.value = "Copied"
+            copyIcon.value = "fa6-solid:check"
+        } catch (err) {
+            copyText.value = "Error"
+            copyIcon.value = "fa6-solid:triangle-exclamation"
+        }
+        setTimeout(resetCopy, 5000)
+    }
+}
+function resetCopy() {
+    copyText.value = "Copy"
+    copyIcon.value = "octicon:copy-16"
+}
+function showInstructions(provider: string) {
+    if (provider == publishInstructions.value) {
+        publishInstructions.value = ""
+    } else {
+        publishInstructions.value = provider
+    }
+}
+function instructionsButtonClass(provider: string) {
+    if (provider == publishInstructions.value) {
+        return ["btn", "btn-primary"]
+    }
+    return ["btn", "btn-light"]
+}
 
 watch(project, requestSave, {deep: true})
 
@@ -442,7 +583,7 @@ function openFileDialog(filetypes: string): Promise<File | null> {
 }
 
 function publishProject() {
-    console.log('publish project')
+    publishModalOpen.value = true
 }
 
 function resetProject() {
@@ -452,6 +593,11 @@ function resetProject() {
 function doReset() {
     resetProjectModalOpen.value = false
     project.value = getDefaultProject()
+}
+
+function doPublish() {
+    publishModalOpen.value = false
+    publishedModalOpen.value = true
 }
 
 function downloadFile(filename: string, content: string) {
@@ -581,4 +727,29 @@ onMounted(() => {
     scrollbar-color: rgba(1, 1, 1, 0.2) transparent;
 }
 
+ol.steps {
+    counter-reset: ordered-list-item-counter
+}
+ol.steps > li {
+    margin-top: 1rem;
+    counter-increment: ordered-list-item-counter;
+    list-style:none
+}
+ol.steps > li:before {
+    content: counter(ordered-list-item-counter);
+    float: left;
+    width: calc(1.5rem - 2px);
+    margin-left: -2rem;
+    margin-top: 1px;
+    font-size: 14px;
+    line-height: calc(1.5rem - 2px);
+    font-weight: 500;
+    text-align: center;
+    background-color: var(--bs-body-color);
+    color: var(--bs-body-bg);
+    border-radius: 50%;
+}
+.text-muted ol.steps > li:before {
+    background-color: var(--bs-secondary-color);
+}
 </style>

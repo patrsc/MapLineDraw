@@ -1,5 +1,5 @@
 <template>
-    <div :class="classes">
+    <div :class="classes" :style="props.styles">
         <div>
             <Ico :name="icon" class="me-2" />
         </div>
@@ -11,7 +11,8 @@
 
 <script setup lang="ts">
 const props = defineProps({
-    type: {type: String, default: "danger"}
+    type: {type: String, default: "danger"},
+    styles: {type: String, default: ""}
 })
 const icon = computed(() => {
     switch (props.type) {

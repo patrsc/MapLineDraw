@@ -15,7 +15,7 @@
             </div>
             <div v-if="!nofooter" class="modal-footer">
                 <button type="button" class="btn btn-secondary"
-                    data-bs-dismiss="modal">Cancel</button>
+                    data-bs-dismiss="modal">{{ cancelText ?? 'Cancel' }}</button>
                 <slot name="footer"></slot>
             </div>
             </div>
@@ -27,6 +27,7 @@
 interface Props {
     id: string,
     nofooter?: boolean,
+    cancelText?: string,
 }
 const open = defineModel<boolean>()
 const emits = defineEmits(['hide', 'shown'])
