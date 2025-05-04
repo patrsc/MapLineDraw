@@ -12,30 +12,30 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             </ul>
             <div v-if="publicProject" class="d-flex gap-2">
-                <button class="btn btn-primary" type="button" @click="emit('button-click', 'open')">
+                <button class="btn btn-primary" type="button" @click="emit('button-click', 'open-public')">
                     <Ico name="fa6-regular:folder" class="me-2"/>Open this project
                 </button>
                 <button class="btn btn-success" type="button" @click="emit('button-click', 'save')">
                     <Ico name="fa6-solid:download" class="me-2"/>Save
                 </button>
-                <button class="btn btn-light" type="button" @click="emit('button-click', 'publish')">
+                <button class="btn btn-light" type="button" @click="emit('button-click', 'copy-link')">
                     <Ico name="fa6-solid:link" class="me-2"/>Copy link
                 </button>
-                <button class="btn btn-danger" type="button" @click="emit('button-click', 'reset')">
+                <button class="btn btn-danger" type="button" @click="emit('button-click', 'close-public')">
                     <Ico name="fa6-solid:arrow-right-from-bracket" class="me-2"/>Back to your project
                 </button>
             </div>
             <div v-else class="d-flex gap-2">
-                <button class="btn btn-primary" type="button" @click="emit('button-click', 'open-public')">
+                <button class="btn btn-primary" type="button" @click="emit('button-click', 'open')">
                     <Ico name="fa6-regular:folder" class="me-2"/>Open
                 </button>
                 <button class="btn btn-success" type="button" @click="emit('button-click', 'save')">
                     <Ico name="fa6-solid:download" class="me-2"/>Save
                 </button>
-                <button class="btn btn-light" type="button" @click="emit('button-click', 'copy-link')">
+                <button class="btn btn-light" type="button" @click="emit('button-click', 'publish')">
                     <Ico name="fa6-solid:arrow-up-from-bracket" class="me-2"/>Publish
                 </button>
-                <button class="btn btn-danger" type="button" @click="emit('button-click', 'close-public')">
+                <button class="btn btn-danger" type="button" @click="emit('button-click', 'reset')">
                     <Ico name="fa6-solid:trash" class="me-2"/>Reset
                 </button>
             </div>
