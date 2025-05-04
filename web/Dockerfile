@@ -9,12 +9,14 @@ RUN npm ci
 
 COPY assets assets
 COPY components components
+COPY pages pages
 COPY plugins plugins
 COPY public public
 COPY server server
 COPY types types
 COPY utils utils
 COPY app.vue .
+COPY error.vue .
 COPY nuxt.config.ts .
 COPY tsconfig.json .
 

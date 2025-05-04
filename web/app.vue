@@ -1,5 +1,5 @@
 <template>
-    <Map />
+    <NuxtPage />
 </template>
 
 <script setup lang="ts">
