@@ -511,10 +511,10 @@ onMounted(() => {
 
 .selected-item {
     color: white;
-    background-color: rgb(76, 0, 255);
+    background-color: #0d6efd;
 }
 .selected-item:hover {
-    background-color: rgb(76, 0, 255);
+    background-color: #0d6efd;
 }
 
 .no-lines-placeholder {
