@@ -224,11 +224,12 @@
             </li>
             <li>Paste the public link:</li>
             <input type="text" class="form-control mt-2" v-model="publicFileUrl"
-                placeholder="https://example.com/public/project.json">
+                placeholder="">
                 <div class="form-text">
                 This link will not be shared. If you delete the source file, the public project will also be deleted.
                 </div>
         </ol>
+        <Alert v-if="publishErrorText" type="danger">{{ publishErrorText }}</Alert>
         <template v-slot:title>
             Publish project
         </template>
@@ -327,6 +328,7 @@ let publishModalOpen = ref(false)
 let publishedModalOpen = ref(false)
 let publicFileUrl = ref("")
 let publishInstructions = ref("")
+let publishErrorText = ref("")
 let publicUrl = ref("https://maplinedraw.com/public/asdfasdfasdf")
 const copyText = ref("")
 const copyIcon = ref("")
@@ -606,6 +608,7 @@ function openFileDialog(filetypes: string): Promise<File | null> {
 }
 
 function publishProject() {
+    publishErrorText.value = ""
     publishModalOpen.value = true
 }
 
@@ -619,6 +622,22 @@ function doReset() {
 }
 
 function doPublish() {
+    let error = true
+    // Errors:
+    // File cannot be accessed. Make sure it is publicly accessible and a direct download link.
+    // Files larger than 1 MB are not supported. Use a smaller project file.
+    // The file content is not valid JSON.
+    // The file does not respect the JSON schema of MapLineDraw.
+    // The URL you provided is too long. At most 250 characters are supported.
+    if (error) {
+        publishErrorText.value = "Not implemented yet."
+    } else {
+        finishPublish()
+    }
+}
+
+function finishPublish() {
+    publishErrorText.value = ""
     publishModalOpen.value = false
     publishedModalOpen.value = true
 }
