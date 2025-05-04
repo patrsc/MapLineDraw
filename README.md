@@ -5,11 +5,24 @@ Show properties like length and maximum speed.
 Free and open source.
 https://maplinedraw.com
 
-## Run API
+## Develop
+
+### Clone repository
+
+```
+git clone https://github.com/patrsc/MapLineDraw.git
+cd MapLineDraw
+```
+
+### Run API
+
+Change directory:
+```
+cd api
+```
 
 Install dependencies:
 ```
-cd api
 poetry install
 ```
 
@@ -18,15 +31,44 @@ Run API:
 poetry run fastapi dev api.py
 ```
 
-## Run web site
+### Run web site
 
-Change directory (`cd web`) and continue with [web/README.md](web/README.md).
+Change directory:
+```
+cd api
+```
+
+Make sure to install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server on `http://localhost:3000`:
+
+```bash
+npm run dev
+```
+
+Build the application for production:
+
+```bash
+npm run build
+```
+
+Locally preview production build:
+```bash
+npm run preview
+```
+
+Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Deploy
 
 See [Deployment Guide](deploy.md) how to deploy to [maplinedraw.com](https://maplinedraw.com).
 
-## Later
+## TODO
 
 * publish:
   * save immutable copy on server, link = hash of JSON file (concise JSON)
