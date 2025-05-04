@@ -15,4 +15,7 @@ export default defineNuxtConfig({
     features: {
         inlineStyles: false,
     },
+    icon: {
+        localApiEndpoint: '/_api/_nuxt_icon'
+    }
 })
