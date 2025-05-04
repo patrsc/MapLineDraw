@@ -226,7 +226,7 @@
             <input type="text" class="form-control mt-2" v-model="publicFileUrl"
                 placeholder="https://example.com/public/project.json">
                 <div class="form-text">
-                This will not be shared. If the source file is deleted, the public project will also be deleted.
+                This link will not be shared. If you delete the source file, the public project will also be deleted.
                 </div>
         </ol>
         <template v-slot:title>
@@ -237,9 +237,9 @@
             @click="doPublish">Publish</button>
         </template>
     </Modal>
-    <Modal id="publisedhModal" v-model="publishedModalOpen" cancel-text="Close">
+    <Modal id="publisedhModal" class="modal-lg" v-model="publishedModalOpen" cancel-text="Close">
         <Alert type="success" styles="margin-top: 0 !important;">Your project was published.</Alert>
-        <p>You can access the project with the following link:</p>
+        <p>Everyone can access the project with the following link:</p>
         <div class="input-group mt-2">
             <input type="text" class="form-control" disabled :value="publicUrl"
                 id="publicUrl">
