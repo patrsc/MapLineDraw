@@ -29,6 +29,7 @@ const mapElement = useTemplateRef('map-element')
 
 interface Props {
     colorMap: ColorMap
+    readOnly: boolean
 }
 
 const props = defineProps<Props>()
@@ -158,6 +159,7 @@ function setLeafletCursor(cursor: "grab" | "crosshair") {
 }
 
 function toggleClosed(index: number) {
+    if (props.readOnly) return;
     const c = curves.value[index]
     c.closed = !c.closed
     requestCurveUpdate()
@@ -194,7 +196,9 @@ function newPoint(lat: number, lon: number, index: number) {
         radius: 15,
         bubblingMouseEvents: false,
     })
-    moveableMarker(map, point, index)
+    if (!props.readOnly) {
+        moveableMarker(map, point, index)
+    }
     return point
 }
 
@@ -217,6 +221,7 @@ async function deletePolyline(index: number) {
 }
 
 function deleteSelectedPolyline() {
+    if (props.readOnly) return;
     if (isCurveSelected.value) {
         deletePolyline(selectedCurveIndex.value)
     }
@@ -376,7 +381,9 @@ function drawControlLine(currentPolyline: Curve, index: number) {
             className: cl,
             bubblingMouseEvents: false,
         })
-        line.on("click", (e) => lineClick(e, index))
+        if (!props.readOnly) {
+            line.on("click", (e) => lineClick(e, index))
+        }
         map.addLayer(line)
         curvesCache[index].layers.push(line)
     }
@@ -436,6 +443,7 @@ function moveableMarker(map: L.Map, marker: L.CircleMarker, index: number) {
 }
 
 function deletePoint(index: number) {
+    if (props.readOnly) return 0
     if (!selectedCurve.value) return 0
     const points = selectedCurve.value.controlPoints
     points.splice(index, 1)

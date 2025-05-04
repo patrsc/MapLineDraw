@@ -48,7 +48,7 @@
                             <h5 style="display: inline;">{{ projectNameDisplay }}</h5>
                             <span class="author text-muted small">{{ authorDisplay }}</span>
                         </div>
-                        <a href="#" class="small" @click="toggleProjectEditMode">Edit</a>
+                        <a v-if="!readOnly" href="#" class="small" @click="toggleProjectEditMode">Edit</a>
                     </div>
                     <p v-if="descriptionDisplay" class="description text-muted small">
                         {{ descriptionDisplay }}
@@ -56,7 +56,7 @@
                 </template>
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="mt-2">Curves</h5>
-                    <button class="btn btn-sm btn-primary"
+                    <button v-if="!readOnly" class="btn btn-sm btn-primary"
                     @click.stop="toggleDrawMode"
                     >{{ btnDrawText }}</button>
                 </div>
@@ -68,7 +68,7 @@
                 <template v-for="(c, index) in project.curves">
                     <div :class="listItemClass(index)" @click.stop="selectPolyline(index)">
                         <div class="curve-name">{{ `${c.name} (${c.controlPoints.length} points)` }}</div>
-                        <div v-if="index == selectedCurveIndex" class="d-flex gap-1">
+                        <div v-if="!readOnly && index == selectedCurveIndex" class="d-flex gap-1">
                             <button class="btn btn-light btn-sm"
                                 @click.stop="toggleClosed(index)"
                             >
@@ -85,7 +85,8 @@
                 <div class="curve-props" v-if="isCurveSelected" @click.stop="noUnselect">
                     <h5 style="width: 100%">Curve properties</h5>
                     <input type="text" v-model="project.curves[selectedCurveIndex].name"
-                        class="form-control mb-1" @keyup.stop placeholder="Curve name">
+                        class="form-control mb-1" @keyup.stop placeholder="Curve name"
+                        :disabled="readOnly">
                     <div v-for="text in properties" class="px-1 small">{{ text }}</div>
                 </div>
                 <h5 class="mt-3">Legend</h5>
@@ -107,6 +108,7 @@
         </div>
         <MapView
             ref="mapViewRef"
+            :readOnly="readOnly"
             :color-map="selectedColorMap"
             v-model:map-settings="project.settings.map"
             v-model:curves="project.curves"
@@ -152,6 +154,7 @@ const selectedColorMap = computed(() => {
     return project.value.colorMaps[project.value.settings.selectedColorMapIndex]
 })
 
+let readOnly = ref(false)
 let drawMode = ref(false)
 
 const mapViewRef = useTemplateRef("mapViewRef")
@@ -260,6 +263,7 @@ function handleKeyboardEvent(e: KeyboardEvent) {
 }
 
 function toggleDrawMode() {
+    if (readOnly.value) return
     drawMode.value = !drawMode.value
 }
 
