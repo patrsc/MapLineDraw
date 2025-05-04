@@ -12,4 +12,7 @@ export default defineNuxtConfig({
         '~/assets/main.scss',
     ],
     modules: ['@nuxt/icon'],
+    features: {
+        inlineStyles: false,
+    },
 })
