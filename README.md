@@ -70,13 +70,6 @@ See [Deployment Guide](deploy.md) how to deploy to [maplinedraw.com](https://map
 
 ## TODO
 
-* publish:
-  * save immutable copy on server, link = hash of JSON file (concise JSON)
-  * deleted after 1 year
-  * re-publish resets timer
-  * Open this project (discards current project) | Re-publish | Download | Copy link | Back to your project
-  * project can only be accessed by link: `maplinedraw.com/public/{id}`, read-only
-  * max file size?
 * transfer curve computation to JavaScript
 * implement normal mode:
   * click on point selects point
