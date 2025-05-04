@@ -35,7 +35,7 @@ poetry run fastapi dev api.py
 
 Change directory:
 ```
-cd api
+cd web
 ```
 
 Make sure to install dependencies:
