@@ -141,13 +141,13 @@ async def download_project(url: HttpUrl) -> Project:
         text = data.decode('utf-8')
         json_data = json.loads(text)
     except (UnicodeDecodeError, json.JSONDecodeError) as e:
-        raise BadRequestError("The file content is not valid JSON.") from e
+        raise BadRequestError("The project file content is not valid JSON.") from e
 
     # Validate JSON schema
     try:
         project = Project.model_validate(json_data)
     except ValidationError as e:
-        msg = "The file does not respect the MapLineDraw project JSON schema."
+        msg = "The project file does not respect the MapLineDraw project JSON schema."
         raise BadRequestError(msg) from e
 
     return project
