@@ -190,9 +190,9 @@ class GlobePoint:
         """
         Compute relative distances between (lat, lon, alt) coordinate points.
 
-        @param two_dim: True/False, whether altitude difference between the points should be
+        :param two_dim: True/False, whether altitude difference between the points should be
         considered
-        @returns: array of distances between neighboring points
+        :returns: array of distances between neighboring points
         """
         # vector of segment distances of a path (sequence of points)
         return self.to_cartesian().path_segment_distance(two_dim=two_dim)

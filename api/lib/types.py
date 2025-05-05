@@ -1,4 +1,5 @@
 """Type definitions."""
+from datetime import datetime
 from typing import Annotated
 from annotated_types import Len
 from pydantic import BaseModel, Field, model_validator, ConfigDict, StringConstraints
@@ -118,3 +119,9 @@ class Project(BaseModel):
     settings: ProjectSettings
 
     model_config = ConfigDict(extra='forbid')
+
+
+class ProjectStore(BaseModel):
+    """Project stored information."""
+    url: HttpUrl
+    time: datetime
