@@ -1,0 +1,124 @@
+{
+    "info": {
+        "name": "",
+        "description": "",
+        "author": ""
+    },
+    "curves": [
+        {
+            "name": "Curve",
+            "controlPoints": [
+                {
+                    "lat": 51.50681927626061,
+                    "lon": -0.19329071044921878
+                },
+                {
+                    "lat": 51.46598592502469,
+                    "lon": -0.16822814941406253
+                },
+                {
+                    "lat": 51.497202145853784,
+                    "lon": -0.11501312255859376
+                },
+                {
+                    "lat": 51.459782899068315,
+                    "lon": -0.08445739746093751
+                }
+            ],
+            "closed": false
+        }
+    ],
+    "colorMaps": [
+        {
+            "name": "High-speed train",
+            "items": [
+                {
+                    "limit": null,
+                    "color": "#9C59FF",
+                    "label": "400+"
+                },
+                {
+                    "limit": 400,
+                    "color": "#009B33",
+                    "label": "350+"
+                },
+                {
+                    "limit": 350,
+                    "color": "#00D219",
+                    "label": "300+"
+                },
+                {
+                    "limit": 300,
+                    "color": "#A1FC00",
+                    "label": "250+"
+                },
+                {
+                    "limit": 250,
+                    "color": "#FFFF00",
+                    "label": "200+"
+                },
+                {
+                    "limit": 200,
+                    "color": "#FF9500",
+                    "label": "160+"
+                },
+                {
+                    "limit": 160,
+                    "color": "#FF0000",
+                    "label": "<160"
+                }
+            ]
+        },
+        {
+            "name": "Low-speed train",
+            "items": [
+                {
+                    "limit": null,
+                    "color": "#9C59FF",
+                    "label": "200+"
+                },
+                {
+                    "limit": 200,
+                    "color": "#009B33",
+                    "label": "160+"
+                },
+                {
+                    "limit": 160,
+                    "color": "#00D219",
+                    "label": "120+"
+                },
+                {
+                    "limit": 120,
+                    "color": "#A1FC00",
+                    "label": "100+"
+                },
+                {
+                    "limit": 100,
+                    "color": "#FFFF00",
+                    "label": "80+"
+                },
+                {
+                    "limit": 80,
+                    "color": "#FF9500",
+                    "label": "60+"
+                },
+                {
+                    "limit": 60,
+                    "color": "#FF0000",
+                    "label": "<60"
+                }
+            ]
+        }
+    ],
+    "settings": {
+        "selectedColorMapIndex": -1,
+        "map": {
+            "center": {
+                "lat": 51.44020575542215,
+                "lon": -0.11329650878906251
+            },
+            "zoom": 12,
+            "background": "osm"
+        }
+    }
+}
