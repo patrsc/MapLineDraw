@@ -111,7 +111,7 @@
         }
     ],
     "settings": {
-        "selectedColorMapIndex": -1,
+        "selectedColorMapIndex": 0,
         "map": {
             "center": {
                 "lat": 51.44020575542215,
