@@ -126,20 +126,24 @@
     </div>
     </div>
     <Modal id="confirmOpenModal" v-model="openProjectModalOpen">
-        Opening a file will delete the current project's content.
-        <Alert type="danger">All unsaved changes in this project will be lost.</Alert>
+        <template v-if="props.public">
+            Opening this public project will delete your own project's content.
+        </template>
+        <template v-else>Opening a file will delete the current project's content.</template>
+        <Alert type="danger">All unsaved changes in your project will be lost.</Alert>
         <template v-slot:title>
-            Open file
+            <template v-if="props.public">Open public project</template>
+            <template v-else>Open file</template>
         </template>
         <template v-slot:footer>
             <button type="button" class="btn btn-danger"
-            @click="doOpenFile">Delete and open project</button>
+            @click="doOpenProject">Delete and open project</button>
         </template>
     </Modal>
     <Modal id="confirmResetModal" v-model="resetProjectModalOpen">
-        This will delete the project's content and reset it to a blank project.
+        This will delete your project's content and reset it to a blank project.
         Are you sure?
-        <Alert type="danger">All unsaved changes in this project will be lost.</Alert>
+        <Alert type="danger">All unsaved changes in your project will be lost.</Alert>
         <template v-slot:title>
             Reset project
         </template>
@@ -508,6 +512,9 @@ function handleNavbarButtonClick(button: "open" | "save" | "publish" | "reset") 
         "publish": publishProject,
         "reset": resetProject,
         "toggle-sidebar": toggleSidebar,
+        "open-public": openPublicProject,
+        "copy-link": copyPublicLink,
+        "close-public": closePublicProject,
     }
     functions[button]()
 }
@@ -568,16 +575,20 @@ async function openProjectFile() {
     if (await hasUnsavedChanges()) {
         openProjectModalOpen.value = true
     } else {
-        await loadProject()
+        await loadProjectFromFile()
     }
 }
 
-function doOpenFile() {
+function doOpenProject() {
     openProjectModalOpen.value = false
-    loadProject()
+    if (props.public) {
+        loadPublicProject()
+    } else {
+        loadProjectFromFile()
+    }
 }
 
-async function loadProject() {
+async function loadProjectFromFile() {
     const file = await openJsonFileDialog()
     if (!file) {
         return
@@ -589,6 +600,10 @@ async function loadProject() {
     } catch (error) {
         alert("Could not load the file.")
     }
+}
+
+function loadPublicProject() {
+    alert("Not implememted.")
 }
 
 function readFileAsString(file: File): Promise<string> {
@@ -692,6 +707,19 @@ function downloadFile(filename: string, content: string) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+}
+
+function openPublicProject() {
+    openProjectModalOpen.value = true
+}
+
+function copyPublicLink() {
+    publicUrl.value = window.location.href
+    nextTick(copyUrl)
+}
+
+function closePublicProject() {
+    navigateTo('/')
 }
 
 // Main
