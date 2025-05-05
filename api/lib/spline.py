@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from numpy import ndarray
 from scipy.interpolate import splev
-from geo import arclen
+from .geo import arclen
 
 
 @dataclass
