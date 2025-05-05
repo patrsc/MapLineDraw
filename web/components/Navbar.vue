@@ -11,7 +11,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             </ul>
-            <div v-if="publicProject" class="d-flex gap-2">
+            <div v-if="props.public" class="d-flex gap-2">
                 <button class="btn btn-primary" type="button" @click="emit('button-click', 'open-public')">
                     <Ico name="fa6-regular:folder" class="me-2"/>Open this project
                 </button>
@@ -46,7 +46,10 @@
 
 <script setup lang="ts">
 const emit = defineEmits(["button-click"])
-const publicProject = ref(false)
+interface Props {
+    public?: boolean
+}
+const props = defineProps<Props>()
 </script>
 
 <style scoped>

@@ -4,27 +4,33 @@
         @keyup.delete="deleteSelectedPolyline"
         @keyup="handleKeyboardEvent"
     >
-        <Navbar @button-click="handleNavbarButtonClick"/>
+        <Navbar @button-click="handleNavbarButtonClick" :public="props.public"/>
         <div class="map-main">
         <div class="sidebar" @click="unselect" :data-visible="sidebarVisible">
             <div class="sidebar-text">
                 <p class="text-muted small mt-2 mb-2 help-text">
-                    <template v-if="!drawMode">
-                        <span v-if="isCurveSelected">
-                            Move points by dragging. Delete point by clicking.
-                            Add intermediate points by clicking on control line.
-                        </span>
+                    <span v-if="props.public">
+                        You are viewing a public project in read-only mode.
+                        Click on <em>Open this project</em> to make changes.
+                    </span>
+                    <template v-else>
+                        <template v-if="!drawMode">
+                            <span v-if="isCurveSelected">
+                                Move points by dragging. Delete point by clicking.
+                                Add intermediate points by clicking on control line.
+                            </span>
+                            <span v-else>
+                                Sketch corridors of railway lines or roads on an interactive map.<br>
+                                Free and open source.
+                                <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
+                                >View on GitHub</a>
+                            </span>
+                        </template>
                         <span v-else>
-                            Sketch corridors of railway lines or roads on an interactive map.<br>
-                            Free and open source.
-                            <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
-                            >View on GitHub</a>
+                            Click on different map positions to draw curve by adding points.<br>
+                            Press <kbd>d</kbd> to finish or click Finish.
                         </span>
                     </template>
-                    <span v-else>
-                        Click on different map positions to draw curve by adding points.<br>
-                        Press <kbd>d</kbd> to finish or click Finish.
-                    </span>
                 </p>
                 <template v-if="projectEditMode">
                     <div class="d-flex align-items-center justify-content-between">
@@ -273,6 +279,13 @@
 
 import type { Project } from "~/types"
 import { getColorMaps } from "~/utils/themes"
+import { getApiUrl } from "~/utils/api"
+
+interface Props {
+    public?: boolean
+    publicProjectData?: Project
+}
+const props = defineProps<Props>()
 
 const apiUrl = getApiUrl()
 const selectedCurveIndex = ref(-1)
@@ -281,7 +294,7 @@ const selectedColorMap = computed(() => {
     return project.value.colorMaps[project.value.settings.selectedColorMapIndex]
 })
 
-let readOnly = ref(false)
+let readOnly = computed(() => props.public)
 let drawMode = ref(false)
 let sidebarVisible = ref(true)
 
@@ -298,14 +311,6 @@ const btnDrawText = computed(() => {
         }
     }
 })
-
-function getApiUrl(): string {
-    let url = "https://maplinedraw.com/api"
-    if (import.meta.dev) {
-        url = "http://localhost:8000"
-    }
-    return url
-}
 
 function getDefaultProject() {
     return {
@@ -474,6 +479,9 @@ function requestSave() {
 
 function saveLocalStorage() {
     // save project to local storage
+    if (props.public) {
+        return
+    }
     if (saveIdRequest == saveId) {
         return
     }
@@ -483,6 +491,10 @@ function saveLocalStorage() {
 
 function loadLocalStorage() {
     // load project from local storage (if any was saved before)
+    if (props.public) {
+        project.value = props.publicProjectData as Project
+        return
+    }
     const s = localStorage.getItem("project")
     if (s != null) {
         project.value = JSON.parse(s)
@@ -505,7 +517,9 @@ async function saveProjectFile() {
     const pretty = JSON.stringify(project.value, null, 4)
     const filename = projectNameDisplay.value + ".json"
     downloadFile(filename, pretty)
-    localStorage.setItem("saved-project-hash", hash)
+    if (!props.public) {
+        localStorage.setItem("saved-project-hash", hash)
+    }
 }
 
 async function hashProject(): Promise<string> {
@@ -524,6 +538,7 @@ async function sha256(uint8Array: Uint8Array): Promise<string> {
 }
 
 async function hasUnsavedChanges() {
+    if (props.public) return true
     if (isEmpytProject()) {
         return false
     }
