@@ -30,6 +30,7 @@ const mapElement = useTemplateRef('map-element')
 interface Props {
     colorMap: ColorMap
     readOnly: boolean
+    apiUrl: string
 }
 
 const props = defineProps<Props>()
@@ -517,10 +518,6 @@ async function loadSpline(p: Curve): Promise<null | SplineData> {
         closed: p.closed,
         max_distance: 30,
     }
-    let url = "https://maplinedraw.com/api/curve"
-    if (import.meta.dev) {
-        url = "http://localhost:8000/curve"
-    }
     const options = {
         method: "POST",
         body: JSON.stringify(data),
@@ -528,7 +525,7 @@ async function loadSpline(p: Curve): Promise<null | SplineData> {
             'Content-Type': 'application/json'
         }
     }
-    const res = await fetch(url, options)
+    const res = await fetch(`${props.apiUrl}/curve`, options)
     if (res.status == 200) {
         return await res.json()
     } else {

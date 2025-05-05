@@ -108,6 +108,7 @@
         </div>
         <MapView
             ref="mapViewRef"
+            :api-url="apiUrl"
             :readOnly="readOnly"
             :color-map="selectedColorMap"
             v-model:map-settings="project.settings.map"
@@ -162,10 +163,12 @@
                         @click="showInstructions('google')">
                         <Ico name="fa6-brands:google-drive" class="me-2"/>Google Drive
                     </button>
+                    <!-- OneDrive direct download link do not work any more
                     <button :class="instructionsButtonClass('onedrive')" type="button"
                         @click="showInstructions('onedrive')">
                         <Ico name="fa6-solid:cloud" class="me-2"/>OneDrive
                     </button>
+                    -->
                     <button :class="instructionsButtonClass('github')" type="button"
                         @click="showInstructions('github')">
                         <Ico name="fa6-brands:github" class="me-2"/>GitHub
@@ -271,6 +274,7 @@
 import type { Project } from "~/types"
 import { getColorMaps } from "~/utils/themes"
 
+const apiUrl = getApiUrl()
 const selectedCurveIndex = ref(-1)
 const isCurveSelected = computed(() => selectedCurveIndex.value != -1)
 const selectedColorMap = computed(() => {
@@ -294,6 +298,14 @@ const btnDrawText = computed(() => {
         }
     }
 })
+
+function getApiUrl(): string {
+    let url = "https://maplinedraw.com/api"
+    if (import.meta.dev) {
+        url = "http://localhost:8000"
+    }
+    return url
+}
 
 function getDefaultProject() {
     return {
@@ -329,7 +341,7 @@ let publishedModalOpen = ref(false)
 let publicFileUrl = ref("")
 let publishInstructions = ref("")
 let publishErrorText = ref("")
-let publicUrl = ref("https://maplinedraw.com/public/asdfasdfasdf")
+let publicUrl = ref("")
 const copyText = ref("")
 const copyIcon = ref("")
 resetCopy()
@@ -621,17 +633,35 @@ function doReset() {
     project.value = getDefaultProject()
 }
 
-function doPublish() {
-    let error = true
-    if (error) {
-        publishErrorText.value = "Not implemented yet."
-    } else {
-        finishPublish()
+async function doPublish() {
+    let result = null
+    try {
+        const h = { 'content-type': 'application/json' }
+        const b = JSON.stringify({ url: publicFileUrl.value })
+        const res = await fetch(`${apiUrl}/publish`, { method: 'POST', body: b, headers: h })
+        if (res.ok) {
+            publishErrorText.value = ""
+            result = await res.json()
+        } else {
+            if (res.status == 422) {
+                publishErrorText.value = "Error: Bad API request."
+            } else {
+                const d = await res.json()
+                publishErrorText.value = d.detail.message
+            }
+        }
+    } catch (e) {
+        publishErrorText.value = "Error connecting to API."
     }
+    if (!publishErrorText.value) {
+        finishPublish(result.id)
+    }
+
 }
 
-function finishPublish() {
-    publishErrorText.value = ""
+function finishPublish(id: string) {
+    const rootUrl = `${location.protocol}//${location.host}`;
+    publicUrl.value = `${rootUrl}/public/${id}`
     publishModalOpen.value = false
     publishedModalOpen.value = true
 }
