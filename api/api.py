@@ -1,5 +1,6 @@
 """REST API for computing B-spline curves."""
 import os
+import re
 import json
 from datetime import datetime, timezone
 import aiohttp
@@ -86,21 +87,22 @@ def compute_curve(data: CurveInput) -> CurveOutput:
 async def publish_project(data: PublishInput) -> PublishOutput:
     """Publish a project."""
     # pylint: disable=redefined-builtin
+    url = convert_known_cloud_provider_url(data.url)
 
     # Verify URL length limit
-    if len(data.url) > MAX_URL_LENGTH:
+    if len(url) > MAX_URL_LENGTH:
         msg = f"The provided URL is too long. At most {MAX_URL_LENGTH} characters are supported."
         raise BadRequestError(msg)
 
-    # Download data
-    project = await download_project(data.url)
+    # Download project
+    project = await download_project(url)
     print(f'Project name: {project.info.name}')
 
     # Generate id
     id = generate_id()
 
     # Store item including current date
-    value = ProjectStore(url=data.url, time=datetime.now(timezone.utc))
+    value = ProjectStore(url=url, time=datetime.now(timezone.utc))
     json_str = value.model_dump_json()
     with open(os.path.join(PROJECT_STORE, f"{id}.json"), 'w', encoding='utf8') as f:
         f.write(json_str)
@@ -180,3 +182,16 @@ async def download_file(url: str, max_size: int) -> bytes:
                     )
                     raise BadRequestError(msg)
             return bytes(data)
+
+
+def convert_known_cloud_provider_url(url: HttpUrl) -> HttpUrl:
+    """Convert URLs from known cloud providers to direct download URLs."""
+    if 'dropbox.com' in (url.url.host or ''):
+        if 'dl=0' in url:
+            return HttpUrl(url.replace('dl=0', 'dl=1'))
+    if 'google.com' in (url.url.host or ''):
+        match = re.match(r'https?://drive\.google\.com/file/d/([^/]+)/view', url)
+        if match:
+            file_id = match.group(1)
+            return HttpUrl(f'https://drive.google.com/uc?export=download&id={file_id}')
+    return url
