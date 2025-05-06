@@ -10,7 +10,7 @@
             <div class="sidebar-text">
                 <p class="text-muted small mt-2 mb-2 help-text">
                     <span v-if="props.public">
-                        You are viewing a public project in read-only mode.
+                        You are viewing a shared project, which cannot be edited.
                         Click on <em>Open this project</em> to make changes.
                     </span>
                     <template v-else>
@@ -127,17 +127,21 @@
     </div>
     <Modal id="confirmOpenModal" v-model="openProjectModalOpen">
         <template v-if="props.public">
-            Opening this public project will delete your own project's content.
+            Opening this project will <strong>overwrite</strong> your own project's content with the
+            content of this shared project.
         </template>
-        <template v-else>Opening a file will delete the current project's content.</template>
+        <template v-else>Opening a file will <strong>overwrite</strong> your project's content with the
+            content of the opened project file.</template>
         <Alert type="danger">All unsaved changes in your project will be lost.</Alert>
         <template v-slot:title>
-            <template v-if="props.public">Open public project</template>
-            <template v-else>Open file</template>
+            <template v-if="props.public">Open shared project</template>
+            <template v-else>Open project file</template>
         </template>
         <template v-slot:footer>
-            <button type="button" class="btn btn-danger"
-            @click="doOpenProject">Delete and open project</button>
+            <button v-if="props.public" type="button" class="btn btn-danger"
+            @click="doOpenProject">Overwrite your project</button>
+            <button v-else type="button" class="btn btn-danger"
+            @click="doOpenProject">Select file and overwrite your project</button>
         </template>
     </Modal>
     <Modal id="confirmResetModal" v-model="resetProjectModalOpen">
@@ -153,10 +157,11 @@
         </template>
     </Modal>
     <Modal id="publishModal" class="modal-lg" v-model="publishModalOpen">
-        Make this project accessible to others by following these steps:
+        Share this project with others by generating a sharable project link. The shared
+        project cannot be edited by others. Follow these steps:
         <ol class="steps">
-            <li>Save your project file and upload it to a public place. You can
-                use the cloud storage provider of your choice to create a public link to the
+            <li>Save your project file and upload it to a storage provider. You can
+                use the cloud storage provider of your choice to create an access link to the
                 file. You can also use your own web server to host the file.
                 <div class="mt-2">
                     <button class="btn btn-success" type="button" @click="saveProjectFile">
@@ -235,25 +240,25 @@
                     </ol>
                 </p>
             </li>
-            <li>Paste the public link:</li>
+            <li>Paste the access link:</li>
             <input type="text" class="form-control mt-2" v-model="publicFileUrl"
                 placeholder="">
-                <div class="form-text">
-                This link will not be shared. If you delete the source file, the public project will also be deleted.
-                </div>
+            <div class="form-text">
+                This link will not be shared. If you delete the source file, the shared project will also be deleted.
+            </div>
         </ol>
         <Alert v-if="publishErrorText" type="danger">{{ publishErrorText }}</Alert>
         <template v-slot:title>
-            Publish project
+            Share project
         </template>
         <template v-slot:footer>
             <button type="button" class="btn btn-primary"
-            @click="doPublish">Publish</button>
+            @click="doPublish">Generate project link</button>
         </template>
     </Modal>
     <Modal id="publisedhModal" class="modal-lg" v-model="publishedModalOpen" cancel-text="Close">
-        <Alert type="success" styles="margin-top: 0 !important;">Your project was published.</Alert>
-        <p>Everyone can access the project with the following link:</p>
+        <Alert type="success" styles="margin-top: 0 !important;">Your shared project was created.</Alert>
+        <p>This project can be viewed by others with the following link:</p>
         <div class="input-group mt-2">
             <input type="text" class="form-control" disabled :value="publicUrl"
                 id="publicUrl">
@@ -261,20 +266,23 @@
                 <Ico :name="copyIcon" class="me-2"/>{{ copyText }}
             </button>
         </div>
+        <div class="form-text">
+            Copy the link before you close this window.
+        </div>
         <p class="mt-3">You can
             <ul>
                 <li>Change or replace the source file on your storage provider to update
-                    the published project.</li>
+                    the shared project.</li>
                 <li>Delete the source file on your storage provider to delete
-                    the published project.</li>
+                    the shared project.</li>
             </ul>
         </p>
         <template v-slot:footer>
             <NuxtLink class="btn btn-primary"
-            :to="publicUrl">Show published project</NuxtLink>
+            :to="publicUrl">Go to shared project</NuxtLink>
         </template>
         <template v-slot:title>
-            Project was published
+            Shared project created
         </template>
     </Modal>
 </template>
@@ -505,11 +513,11 @@ function loadLocalStorage() {
     }
 }
 
-function handleNavbarButtonClick(button: "open" | "save" | "publish" | "reset") {
+function handleNavbarButtonClick(button: "open" | "save" | "share" | "reset") {
     const functions = {
         "open": openProjectFile,
         "save": saveProjectFile,
-        "publish": publishProject,
+        "share": publishProject,
         "reset": resetProject,
         "toggle-sidebar": toggleSidebar,
         "open-public": openPublicProject,
@@ -603,7 +611,8 @@ async function loadProjectFromFile() {
 }
 
 function loadPublicProject() {
-    alert("Not implememted.")
+    localStorage.setItem("project", JSON.stringify(props.publicProjectData))
+    navigateTo('/')
 }
 
 function readFileAsString(file: File): Promise<string> {
@@ -674,7 +683,7 @@ async function doPublish() {
             result = await res.json()
         } else {
             if (res.status == 422) {
-                publishErrorText.value = "Error: Bad API request."
+                publishErrorText.value = "Validation error: Make sure you entered a valid link."
             } else {
                 const d = await res.json()
                 publishErrorText.value = d.detail.message
@@ -686,12 +695,11 @@ async function doPublish() {
     if (!publishErrorText.value) {
         finishPublish(result.id)
     }
-
 }
 
 function finishPublish(id: string) {
     const rootUrl = `${location.protocol}//${location.host}`;
-    publicUrl.value = `${rootUrl}/public/${id}`
+    publicUrl.value = `${rootUrl}/projects/${id}`
     publishModalOpen.value = false
     publishedModalOpen.value = true
 }

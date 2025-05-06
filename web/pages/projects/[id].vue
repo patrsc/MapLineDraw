@@ -32,13 +32,13 @@ import { getApiUrl } from "~/utils/api"
 
 const apiUrl = getApiUrl()
 
-const { data: project, status, error } = await useFetch<Project | null>(() => `${apiUrl}/public/${id.value}`)
+const { data: project, status, error } = await useFetch<Project | null>(() => `${apiUrl}/projects/${id.value}`)
 
 const errorData = computed(() => {
     if (error.value) {
         let errorData = error.value.data
         if (errorData.detail?.error == "NotFoundError") {
-            return { error: true, code: 404, message: `Page not found: /public/${id.value}` }
+            return { error: true, code: 404, message: `Page not found: /projects/${id.value}` }
         } else if (errorData.detail?.error == "BadRequestError") {
             return { error: true, code: 400, message: errorData.detail?.message || "Unknown error" }
         }

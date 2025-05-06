@@ -109,9 +109,9 @@ async def publish_project(data: PublishInput) -> PublishOutput:
     return PublishOutput(id=id)
 
 
-@app.get("/public/{id}", responses=err(404, 400))
-async def get_public_project(id: str) -> Project:
-    """Get a published project as JSON."""
+@app.get("/projects/{id}", responses=err(404, 400))
+async def get_project(id: str) -> Project:
+    """Get a shared project as JSON."""
     # pylint: disable=redefined-builtin
 
     # Get stored URL
