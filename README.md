@@ -26,11 +26,11 @@ Have fun in drafting your visions for the future of public infrastructure!
 Note that this is not a professional program for infrastructure projects and does for example not consider
 elevation, bridges or tunnels.
 
-Any project you see on https://maplinedraw.com is intended only for discussion and does not mean that what you see is a finalized project that will be built in reality.
+Any project you see on [maplinedraw.com](https://maplinedraw.com) is intended only for discussion and does not mean that what you see is a finalized project that will be built in reality.
 
 ## Usage
 
-Go to https://maplinedraw.com and try it yourself.
+Go to [maplinedraw.com](https://maplinedraw.com) and try it yourself.
 
 ## Develop
 
