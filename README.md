@@ -7,7 +7,7 @@ https://maplinedraw.com
 
 ## Introduction
 
-MapLineDraw is a free, open source web appliction that lets hobbyists draw infrastructure corridors,
+MapLineDraw is a free, open source web application that lets hobbyists draw infrastructure corridors,
 for example railway lines or highways, and share their ideas with others.
 
 It allows you to:
