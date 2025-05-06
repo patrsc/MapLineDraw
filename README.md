@@ -44,7 +44,7 @@ The application does not yet work well on mobile devices.
 
 ## Feedback
 
-Having problems or need a feature? [Open an issue](https://github.com/patrsc/MapLineDraw/issues/new) in GitHub.
+Having problems or need a feature? [Create an issue](https://github.com/patrsc/MapLineDraw/issues/new) in GitHub.
 
 ## Contributing
 
