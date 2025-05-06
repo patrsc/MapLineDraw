@@ -32,6 +32,10 @@ Any project you see on [maplinedraw.com](https://maplinedraw.com) is intended on
 
 Go to [maplinedraw.com](https://maplinedraw.com) and try it yourself.
 
+## Limitations
+
+The application does not yet work well on mobile devices.
+
 ## Develop
 
 ### Clone repository
