@@ -5,6 +5,33 @@ Show properties like length and maximum speed.
 Free and open source.
 https://maplinedraw.com
 
+## Introduction
+
+MapLineDraw is a free, open source web appliction that lets hobbyists draw infrastructure corridors,
+for example railway lines or highways, and share their ideas with others.
+
+It allows you to:
+* Draw smooth curves and show curve properties such as curve length, minimal radius and maximum
+  speed (using a typical design value for comfortable lateral acceleration of railways). Curves are
+  represented using draggable control points (B-spline of degree 3).
+* Make open or closed (circular) curves. Add, move and remove curve control points as you need.
+* Enter project information: Project name, author and description.
+* Download your projects as JSON files to save them locally.
+* Share projects using sharing links. Those projects can be directly shared with others and open
+  directly in the web app.
+* Show different colored legends (you can edit them in the saved JSON file with a text editor).
+
+Have fun in drafting your visions for the future of public infrastructure!
+
+Note that this is not a professional program for infrastructure projects and does for example not consider
+elevation, bridges or tunnels.
+
+Any project you see on https://maplinedraw.com is intended only for discussion and does not mean that what you see is a finalized project that will be built in reality.
+
+## Usage
+
+Go to https://maplinedraw.com and try it yourself.
+
 ## Develop
 
 ### Clone repository
