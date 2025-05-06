@@ -32,9 +32,23 @@ Any project you see on [maplinedraw.com](https://maplinedraw.com) is intended on
 
 Go to [maplinedraw.com](https://maplinedraw.com) and try it yourself.
 
-## Limitations
+### Keyboard shortcuts
+
+* Press <kbd>d</kbd> to toggle draw mode.
+* Press <kbd>backspace</kbd> or <kbd>del</kbd> to delete a curve.
+* Press <kbd>esc</kbd> to unselect curve.
+
+### Limitations
 
 The application does not yet work well on mobile devices.
+
+## Feedback
+
+Having problems or need a feature? [Open an issue](https://github.com/patrsc/MapLineDraw/issues/new) in GitHub.
+
+## Contributing
+
+To contribute source code, fork the repository and create a pull request.
 
 ## Develop
 
@@ -99,7 +113,11 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 
 See [Deployment Guide](deploy.md) how to deploy to [maplinedraw.com](https://maplinedraw.com).
 
-## TODO
+## License
+
+License is [MIT](LICENSE.md).
+
+## Future ideas
 
 * transfer curve computation to JavaScript
 * implement normal mode:
