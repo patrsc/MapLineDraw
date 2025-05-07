@@ -5,15 +5,21 @@ Show properties like length and maximum speed.
 Free and open source.
 https://maplinedraw.com
 
+![example](example.jpg)
+
 ## Introduction
 
-MapLineDraw is a free, open source web application that lets hobbyists draw infrastructure corridors,
+MapLineDraw is a free, open source web application that lets you draw smooth curves on a map.
+* It lets hobbyists draw infrastructure corridors,
 for example railway lines or highways, and share their ideas with others.
+* It can be also used as a measurement or data extraction tool: you can for example draw a curve
+over existing objects, such as roads, race tracks, railways, or rivers to get their length or
+extract their curve data (control points of a spline).
 
-It allows you to:
-* Draw smooth curves and show curve properties such as curve length, minimal radius and maximum
+MapLineDraw allows you to:
+* Draw smooth curves and show curve properties such as curve length, minimal radius and its corresponding maximum
   speed (using a typical design value for comfortable lateral acceleration of railways). Curves are
-  represented using draggable control points (B-spline of degree 3).
+  represented using draggable control points and use B-splines of degree 3, which leads to a continuous curvature.
 * Make open or closed (circular) curves. Add, move and remove curve control points as you need.
 * Enter project information: Project name, author and description.
 * Download your projects as JSON files to save them locally.
@@ -24,9 +30,9 @@ It allows you to:
 Have fun in drafting your visions for the future of public infrastructure!
 
 Note that this is not a professional program for infrastructure projects and does for example not consider
-elevation, bridges or tunnels.
+elevation (bridges or tunnels).
 
-Any project you see on [maplinedraw.com](https://maplinedraw.com) is intended only for discussion and does not mean that what you see is a finalized project that will be built in reality.
+Any project you see on [maplinedraw.com](https://maplinedraw.com) is intended only for discussion and idea sharing and does not mean that what you see is a finalized project that will be built in reality.
 
 ## Usage
 
