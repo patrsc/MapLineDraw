@@ -2,8 +2,7 @@
 
 Sketch corridors of railway lines or roads on an interactive map.
 Show properties like length and maximum speed.
-Free and open source.
-https://maplinedraw.com
+Free and open source. [maplinedraw.com](https://maplinedraw.com)
 
 ![example](example.jpg)
 
