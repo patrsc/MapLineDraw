@@ -16,4 +16,7 @@ const className = computed(() => {
 .vertical-fix {
   vertical-align: -.125em;
 }
+.small-fix {
+  vertical-align: -.05em;
+}
 </style>

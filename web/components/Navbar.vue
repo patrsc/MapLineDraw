@@ -10,6 +10,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Project</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/patrsc/MapLineDraw" target="_blank">GitHub <Ico name="fa7-solid:external-link" class="small small-fix"/></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://medium.com/@patrsc/introducing-maplinedraw-draw-smooth-curves-on-real-maps-free-and-open-source-e1e6a6f9d39e" target="_blank">Article <Ico name="fa7-solid:external-link" class="small small-fix"/></a>
+                </li>
             </ul>
             <div v-if="props.public" class="d-flex gap-2">
                 <button class="btn btn-primary" type="button" @click="emit('button-click', 'open-public')">
