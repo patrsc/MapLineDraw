@@ -13,7 +13,9 @@ useHead({
       { property: 'og:type', content: 'website'},
     ],
     link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg', sizes: 'any' },
+        { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg'},
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png'},
         { rel: 'canonical', href: 'https://maplinedraw.com/'}
     ],
 })
