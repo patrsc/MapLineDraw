@@ -189,7 +189,7 @@
                         <Ico name="fa6-brands:github" class="me-2"/>GitHub
                     </button>
                 </div>
-                <p v-if="publishInstructions == 'dropbox'" class="text-muted mt-3">
+                <div v-if="publishInstructions == 'dropbox'" class="text-muted mt-3">
                     <ol class="steps">
                         <li>Copy the file to your <strong>Dropbox</strong> folder or upload it to
                         <a href="https://www.dropbox.com/" target="_blank">dropbox.com</a></li>
@@ -198,8 +198,8 @@
                         and click on the <strong><Ico name="fa6-solid:link"/> Copy link</strong> button
                         </li>
                     </ol>
-                </p>
-                <p v-if="publishInstructions == 'google'" class="text-muted mt-3">
+                </div>
+                <div v-if="publishInstructions == 'google'" class="text-muted mt-3">
                     <ol class="steps">
                         <li>Copy the file to your <strong>Google Drive</strong> folder or upload it to
                         <a href="https://drive.google.com/" target="_blank">drive.google.com</a></li>
@@ -213,8 +213,8 @@
                         <strong>Anyone with the link</strong> and click on
                         <strong><Ico name="fa6-solid:link"/> Copy link</strong></li>
                     </ol>
-                </p>
-                <p v-if="publishInstructions == 'onedrive'" class="text-muted mt-3">
+                </div>
+                <div v-if="publishInstructions == 'onedrive'" class="text-muted mt-3">
                     <ol class="steps">
                         <li>Copy the file to your <strong>OneDrive</strong> folder or upload it to
                         <a href="https://onedrive.live.com/" target="_blank">onedrive.live.com</a></li>
@@ -226,8 +226,8 @@
                         <strong><Ico name="fa6-regular:eye"/> Can view</strong> and click on
                         <strong><Ico name="fa6-solid:link"/> Copy link</strong></li>
                     </ol>
-                </p>
-                <p v-if="publishInstructions == 'github'" class="text-muted mt-3">
+                </div>
+                <div v-if="publishInstructions == 'github'" class="text-muted mt-3">
                     <ol class="steps">
                         <li>Create a public repository to store the file or use an existing public 
                         repository and commit the file to the repository.</li>
@@ -238,7 +238,7 @@
                         <li>Click on the <strong>Raw</strong> button and
                         copy the link from your browser's address bar.</li>
                     </ol>
-                </p>
+                </div>
             </li>
             <li>Paste the access link:</li>
             <input type="text" class="form-control mt-2" v-model="publicFileUrl"
@@ -269,14 +269,14 @@
         <div class="form-text">
             Copy the link before you close this window.
         </div>
-        <p class="mt-3">You can
+        <div class="mt-3">You can
             <ul>
                 <li>Change or replace the source file on your storage provider to update
                     the shared project.</li>
                 <li>Delete the source file on your storage provider to delete
                     the shared project.</li>
             </ul>
-        </p>
+        </div>
         <template v-slot:footer>
             <NuxtLink class="btn btn-primary"
             :to="publicUrl">Go to shared project</NuxtLink>
