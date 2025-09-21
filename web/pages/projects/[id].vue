@@ -7,8 +7,7 @@
                     <Navbar :public="true"/>
                     <article>
                         <h1>MapLineDraw</h1>
-                        <p>Sketch corridors of railway lines or roads on an interactive map.<br>
-                        Free and open source.
+                        <p>Sketch corridors of railway lines or roads on an interactive map. Draw smooth spline curves on real maps.
                         <a href="https://github.com/patrsc/MapLineDraw" target="_blank">View on GitHub</a>
                         </p>
                         <h2>{{ project.info.name || 'Project' }}</h2>

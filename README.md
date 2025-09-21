@@ -1,6 +1,6 @@
 # MapLineDraw
 
-Sketch corridors of railway lines or roads on an interactive map.
+Sketch corridors of railway lines or roads on an interactive map. Draw smooth spline curves on real maps.
 Show properties like length and maximum speed.
 Free and open source. [maplinedraw.com](https://maplinedraw.com)
 

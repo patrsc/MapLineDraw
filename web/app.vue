@@ -6,9 +6,9 @@
 useHead({
     title: 'MapLineDraw',
     meta: [
-      { name: 'description', content: 'Sketch corridors of railway lines or roads on an interactive map.' },
+      { name: 'description', content: 'Sketch corridors of railway lines or roads on an interactive map. Draw smooth spline curves on real maps.' },
       { property: 'og:title', content: 'MapLineDraw'},
-      { property: 'og:description', content: 'Sketch corridors of railway lines or roads on an interactive map.'},
+      { property: 'og:description', content: 'Sketch corridors of railway lines or roads on an interactive map. Draw smooth spline curves on real maps.'},
       { property: 'og:url', content: 'https://maplinedraw.com/'},
       { property: 'og:type', content: 'website'},
     ],
