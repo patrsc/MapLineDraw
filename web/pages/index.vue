@@ -3,6 +3,7 @@
         <Map />
         <template #fallback>
             <div class="fallback">
+                <Navbar :public="false"/>
                 <article>
                     <h1>MapLineDraw</h1>
                     <p>Sketch corridors of railway lines or roads on an interactive map.<br>

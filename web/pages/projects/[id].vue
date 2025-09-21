@@ -2,8 +2,9 @@
     <template v-if="status == 'success' && project">
         <ClientOnly fallbackTag="main">
             <Map :public="true" :publicProjectData="project"/>
-            <template >
+            <template #fallback>
                 <div class="fallback">
+                    <Navbar :public="true"/>
                     <article>
                         <h1>MapLineDraw</h1>
                         <p>Sketch corridors of railway lines or roads on an interactive map.<br>
