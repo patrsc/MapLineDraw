@@ -14,6 +14,9 @@
                     <a class="nav-link active" aria-current="page" href="#">Project</a>
                 </li>
                 <li class="nav-item">
+                    <NuxtLink to="about" class="nav-link" aria-current="page">About</NuxtLink>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="https://github.com/patrsc/MapLineDraw" target="_blank">GitHub <Ico name="fa7-solid:external-link" class="small small-fix"/></a>
                 </li>
                 <li class="nav-item">
