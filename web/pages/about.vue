@@ -201,3 +201,9 @@ h2 {
     font-size: 1.6rem;
 }
 </style>
+
+<script setup lang="ts">
+useHead({
+    title: 'About MapLineDraw',
+})
+</script>
