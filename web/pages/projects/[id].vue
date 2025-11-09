@@ -8,7 +8,7 @@
                     <article>
                         <h1>MapLineDraw</h1>
                         <p>Sketch corridors of railway lines or roads on an interactive map. Draw smooth spline curves on real maps.
-                        <a href="https://github.com/patrsc/MapLineDraw" target="_blank">View on GitHub</a>
+                        <NuxtLink to="/about">Learn more</NuxtLink>
                         </p>
                         <h2>{{ project.info.name || 'Project' }}</h2>
                         <span v-if="project.info.author">by {{ project.info.author }}</span>

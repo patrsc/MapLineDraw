@@ -21,8 +21,7 @@
                             </span>
                             <span v-else>
                                 Sketch corridors of railway lines or roads on an interactive map. Draw smooth spline curves on real maps. 
-                                <a href="https://github.com/patrsc/MapLineDraw" target="_blank"
-                                >View on GitHub</a>
+                                <NuxtLink to="about">Learn more</NuxtLink>
                             </span>
                         </template>
                         <span v-else>
