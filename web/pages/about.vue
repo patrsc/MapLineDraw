@@ -27,7 +27,7 @@
                 </p>
                 <p>
                     Whether you're a transit enthusiast, a city planner, or just someone who loves to visualize infrastructure,
-                    <a href="https://maplinedraw.com" target="_blank" rel="noopener">MapLineDraw</a>
+                    <a href="https://maplinedraw.com">MapLineDraw</a>
                     is a free and open source web application designed to let you draw smooth curves on a map provided by
                     <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>.
                 </p>
@@ -173,11 +173,11 @@
                     <li>No built-in export to GIS formats (yet)</li>
                 </ul>
 
-                <h2>Conclusion</h2>
+                <h2>Get Started</h2>
                 <p>
                     MapLineDraw provides a simple and free drawing tool for curves on a real map. Whether you're mapping the next
                     high-speed rail link or tracing an existing corridor for fun, it's a tool that helps ideas take shape — smoothly.
-                    Visit <a href="https://maplinedraw.com/" target="_blank" rel="noopener">maplinedraw.com</a> to start drawing.
+                    Visit <a href="https://maplinedraw.com/">maplinedraw.com</a> to start drawing.
                 </p>
                 <p>
                     If you like the tool or have suggestions for improvement, contribute or open an issue on
