@@ -204,6 +204,6 @@ h2 {
 
 <script setup lang="ts">
 useHead({
-    title: 'About MapLineDraw',
+    title: 'MapLineDraw',
 })
 </script>
